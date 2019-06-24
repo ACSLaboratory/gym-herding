@@ -203,7 +203,7 @@ class HerdingEnv(Env):
         self._graph.set_node_neighbors()
         self._graph.update_count()
 
-    def _get_reward(self, action):
+    def _get_reward(self):
         """
         Get reward that is the sum of the difference of the target and
         current distribution
