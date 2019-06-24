@@ -127,7 +127,6 @@ class HerdingEnv(Env):
         obs = self._get_observation()
 
         # Get reward for action
-        # reward = self._get_reward_greedy(new_lx, new_ly)
         reward = self._get_reward(action)
         done = False
 
@@ -203,15 +202,6 @@ class HerdingEnv(Env):
         self._graph.set_node_positions()
         self._graph.set_node_neighbors()
         self._graph.update_count()
-
-    def _get_reward_greedy(self, new_lx, new_ly):
-        """ Get greedy reward from current state of Leader and Agents """
-        target_dist = self._graph.distribution.get_node_value(
-            new_lx, new_ly, "target")
-        current_dist = self._graph.distribution.get_node_value(
-            new_lx, new_ly, "current")
-
-        return current_dist - target_dist
 
     def _get_reward(self, action):
         """
