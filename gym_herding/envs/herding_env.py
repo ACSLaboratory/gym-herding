@@ -6,15 +6,10 @@ Description
 Action Space:
     - Where to move: (Up, Down, Left, Right, Stay)
 
-Written by: Zahi Kakish
+Written by: Zahi Kakish (zmk5)
 
 """
-import sys
-from contextlib import closing
-from six import StringIO
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
 from gym import Env
 from gym.spaces import Box
 from gym.spaces import Discrete
@@ -39,7 +34,7 @@ class HerdingEnv(Env):
     """
     MOVEMENTS = ["left", "right", "up", "down", "stay"]
     def __init__(self, hep=None, observation_space=3):
-        # Set immutable params and mutable variables
+        # Set immutable params and mutable variables, if applicable.
         self.param = hep
         self.var = {
             "is_out_of_bounds": False,
@@ -50,17 +45,25 @@ class HerdingEnv(Env):
                   "HerdingEnvParamters object\nbefore continuing!")
 
         else:
-            self.initialize(hep, observation_space)
+            if isinstance(hep, HerdingEnvParameters):
+                self.initialize(hep, observation_space)
+
+            else:
+                raise TypeError("First argument must be a " +
+                                "HerdingEnvParameter object!")
 
     def initialize(self, hep, observation_space=3):
         """ Initializes the OpenAI Environment """
+        # Set immutable params
+        self.param = hep
+
         # Set plotting class
         self._plot = HerdingEnvPlotting(
             self.param.n_v, self.param.n_p)
 
         # Instantiate Graph, Agents, and Leader object.
         self._graph = NodeGraph(
-            self.param.n_v, self.param.n_p,self.param.weights)
+            self.param.n_v, self.param.n_p, self.param.weights)
         self._leader = Leader(
             0, self.param.n_v, self.param.extra["init_leader_pos"][0],
             self.param.extra["init_leader_pos"][1])
@@ -127,7 +130,7 @@ class HerdingEnv(Env):
         obs = self._get_observation()
 
         # Get reward for action
-        reward = self._get_reward(action)
+        reward = self._get_reward()
         done = False
 
         # Write info
@@ -157,7 +160,7 @@ class HerdingEnv(Env):
         # Returns the current reset observational space.
         return self._graph.distribution.current
 
-    def render(self):
+    def render(self, mode='human'):
         """ Displays the environment """
         self._plot.render(self._graph, self._leader)
 
@@ -166,8 +169,8 @@ class HerdingEnv(Env):
         self._plot.save_render(file_name)
 
     def close(self):
-        """ Something """
-        pass
+        """ Close the environment """
+        raise NotImplementedError()
 
     def is_action_valid(self, action):
         """ Checks if the leader agent action is valid """
