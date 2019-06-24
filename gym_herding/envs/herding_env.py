@@ -204,16 +204,12 @@ class HerdingEnv(Env):
         self._graph.update_count()
 
     def _get_reward(self):
-        """
-        Get reward that is the sum of the difference of the target and
-        current distribution
-        """
-        return -1 * np.sum(np.power(
-            self._graph.distribution.current - self._graph.distribution.target, 2))
+        """ Get reward based on results of leader action """
+        raise NotImplementedError()
 
     def _get_observation(self):
         """ Get the calculated observation of environment state """
-        return self._graph.distribution.current
+        raise NotImplementedError()
 
     def _move_herding_agents(self):
         """ Moves the herding agents within the environment """
