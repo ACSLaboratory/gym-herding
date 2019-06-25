@@ -21,7 +21,7 @@ class Leader():
         self._real_position = np.array([pos_x, pos_y], dtype=np.int8)
         self._visual_position = np.array([pos_x / n_v + 1 / (n_v * 2),
                                           pos_y / n_v + 1 / (n_v * 2)])
-        self._path = {
+        self.path = {
             "path": np.arange(np.power(n_v, 2)),
             "index": 0,
             "size": 0,
@@ -78,23 +78,23 @@ class Leader():
     def set_leader_path(self, path):
         """ Set the path of states that the leader follows """
         if isinstance(path, (np.ndarray, list)):
-            self._path["path"] = path
-            self._path["index"] = 0
-            self._path["size"] = len(path) - 1
+            self.path["path"] = path
+            self.path["index"] = 0
+            self.path["size"] = len(path) - 1
 
         else:
             raise TypeError("path should be a list or np.ndarray.")
 
     def next_state(self):
         """ Move leader to next state in the path """
-        if self._path["index"] >= self._path["size"]:
-            self._path["index"] = 0
+        if self.path["index"] >= self.path["size"]:
+            self.path["index"] = 0
 
         else:
-            self._path["index"] += 1
+            self.path["index"] += 1
 
         # Set state as new step in path.
-        self.state = self._path["path"][self._path["index"]]
+        self.state = self.path["path"][self.path["index"]]
 
     def reset(self):
         """ Reset certain mutable class properties """
@@ -105,8 +105,8 @@ class Leader():
              (self._param["n_v"] * 2),
              self._param["y"] / self._param["n_v"] + 1 / \
              (self._param["n_v"] * 2)])
-        self._path["path"] = np.arange(np.power(self._param["n_v"], 2))
-        self._path["index"] = 0
-        self._path["size"] = 0
+        self.path["path"] = np.arange(np.power(self._param["n_v"], 2))
+        self.path["index"] = 0
+        self.path["size"] = 0
 
         self.state = self._param["initial_state"]
