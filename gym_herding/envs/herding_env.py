@@ -62,9 +62,9 @@ class HerdingEnv(Env):
             self.param.n_v, self.param.n_p)
 
         # Instantiate Graph, Agents, and Leader object.
-        self._graph = NodeGraph(
+        self.graph = NodeGraph(
             self.param.n_v, self.param.n_p, self.param.weights)
-        self._leader = Leader(
+        self.leader = Leader(
             0, self.param.n_v, self.param.extra["init_leader_pos"][0],
             self.param.extra["init_leader_pos"][1])
 
@@ -106,7 +106,7 @@ class HerdingEnv(Env):
         """ Executes the given action """
         # Get new leader state and position from action
         new_lx, new_ly, new_ls, is_out_of_bounds = \
-            self._graph.convert_action_to_node_info(self._leader.state, action)
+            self.graph.convert_action_to_node_info(self.leader.state, action)
 
         # If action takes leader out of bounds, change info state to say that
         # occured.
@@ -136,7 +136,7 @@ class HerdingEnv(Env):
         # Write info
         info = {
             "is_out_of_bounds": self.var["is_out_of_bounds"],
-            "leader_state": self._leader.state,
+            "leader_state": self.leader.state,
             "leader_pos": [new_lx, new_ly],
         }
 
@@ -151,18 +151,18 @@ class HerdingEnv(Env):
 
     def reset(self):
         """ Initializies the environment to initial state for next episode """
-        self._graph.reset()
-        self._graph.update_count()
-        self._leader.reset()
+        self.graph.reset()
+        self.graph.update_count()
+        self.leader.reset()
         self.param.iter = 0
         self.param.extra["t"] = 0
 
         # Returns the current reset observational space.
-        return self._graph.distribution.current
+        return self.graph.distribution.current
 
     def render(self, mode='human'):
         """ Displays the environment """
-        self._plot.render(self._graph, self._leader)
+        self._plot.render(self.graph, self.leader)
 
     def save_render(self, file_name):
         """ Save image of the render """
@@ -175,19 +175,19 @@ class HerdingEnv(Env):
     def is_action_valid(self, action):
         """ Checks if the leader agent action is valid """
         if action == 0:  # Left
-            if self._leader.state % self.param.n_v != 0:
+            if self.leader.state % self.param.n_v != 0:
                 return True
 
         elif action == 1:  # Right
-            if (self._leader.state  + 1) % self.param.n_v != 0:
+            if (self.leader.state  + 1) % self.param.n_v != 0:
                 return True
 
         elif action == 2:  # Up
-            if self._leader.state < (self.param.n_v * (self.param.n_v - 1)):
+            if self.leader.state < (self.param.n_v * (self.param.n_v - 1)):
                 return True
 
         elif action == 3:  # Down
-            if self._leader.state > self.param.n_v:
+            if self.leader.state > self.param.n_v:
                 return True
 
         elif action == 4:  # Stay
@@ -197,14 +197,14 @@ class HerdingEnv(Env):
 
     def _initialize_env_objects(self):
         """ Initialize environment object values """
-        self._graph.distribution.target = self.param.dist["target"]
-        self._graph.distribution.initial = self.param.dist["initial"]
+        self.graph.distribution.target = self.param.dist["target"]
+        self.graph.distribution.initial = self.param.dist["initial"]
         for dist in ["initial", "current", "target"]:
-            self._graph.distribution.apply_population(dist)
+            self.graph.distribution.apply_population(dist)
 
-        self._graph.set_node_positions()
-        self._graph.set_node_neighbors()
-        self._graph.update_count()
+        self.graph.set_node_positions()
+        self.graph.set_node_neighbors()
+        self.graph.update_count()
 
     def _get_reward(self):
         """ Get reward based on results of leader action """
@@ -217,7 +217,7 @@ class HerdingEnv(Env):
     def _move_herding_agents(self):
         """ Moves the herding agents within the environment """
         # Get number of agents within the node that the leader is in
-        chk_ld = self._graph.node[self._leader.state].agent_count
+        chk_ld = self.graph.node[self.leader.state].agent_count
 
         # Increment time
         self.param.extra["t"] += self.param.extra["dt"]
@@ -231,49 +231,49 @@ class HerdingEnv(Env):
             toss = np.random.rand(1, chk_ld)[0]
 
         for i in range(chk_ld):
-            temp_neigh = self._graph.node[self._leader.state].neighbors
+            temp_neigh = self.graph.node[self.leader.state].neighbors
 
             if toss[i] <= len(temp_neigh) * self.param.extra["jump_weight"]:
                 # Get the new state for the agent to jump to
                 rand_perm = np.random.permutation(len(temp_neigh))
-                jump_state = self._graph.get_state(
+                jump_state = self.graph.get_state(
                     temp_neigh[rand_perm[0], :])
 
                 # Helpful variables
-                old_x, old_y = self._graph.get_position(self._leader.state)
-                new_x, new_y = self._graph.get_position(jump_state)
+                old_x, old_y = self.graph.get_position(self.leader.state)
+                new_x, new_y = self.graph.get_position(jump_state)
 
                 # Update current distribution map
                 # TODO: May need to remove these vvvv
-                self._graph.node[self._leader.state].agent_count -= 1
-                self._graph.node[jump_state].agent_count += 1
-                self._graph.distribution.increment_node_value(
+                self.graph.node[self.leader.state].agent_count -= 1
+                self.graph.node[jump_state].agent_count += 1
+                self.graph.distribution.increment_node_value(
                     -1, old_x, old_y, "current")
-                self._graph.distribution.increment_node_value(
+                self.graph.distribution.increment_node_value(
                     1, new_x, new_y, "current")
 
     def _move_leader(self, new_ls, new_lx, new_ly):
         """ Moves the leader to the next position """
-        self._leader.state = new_ls
-        self._leader.real = np.array([new_lx, new_ly], dtype=np.int8)
-        self._leader.visual = np.array([new_lx, new_ly], dtype=np.int8)
+        self.leader.state = new_ls
+        self.leader.real = np.array([new_lx, new_ly], dtype=np.int8)
+        self.leader.visual = np.array([new_lx, new_ly], dtype=np.int8)
 
     def _valid_action_check(self, action):
         """ Checks if the leader agent action is valid """
         if action == 0:  # Left
-            if self._leader.state % self.param.n_v != 0:
+            if self.leader.state % self.param.n_v != 0:
                 return True
 
         elif action == 1:  # Right
-            if (self._leader.state  + 1) % self.param.n_v != 0:
+            if (self.leader.state  + 1) % self.param.n_v != 0:
                 return True
 
         elif action == 2:  # Up
-            if self._leader.state < (self.param.n_v * (self.param.n_v - 1)):
+            if self.leader.state < (self.param.n_v * (self.param.n_v - 1)):
                 return True
 
         elif action == 3:  # Down
-            if self._leader.state > self.param.n_v:
+            if self.leader.state > self.param.n_v:
                 return True
 
         elif action == 5:  # Stay
