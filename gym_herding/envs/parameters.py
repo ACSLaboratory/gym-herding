@@ -43,6 +43,7 @@ class HerdingEnvParameters():
         }
 
         self.extra = {
+            "init_leader_state": 0,
             "init_leader_pos": np.zeros(2, dtype=np.int8),
             "t": 0,
             "dt": 0.1,

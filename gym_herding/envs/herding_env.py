@@ -65,7 +65,8 @@ class HerdingEnv(Env):
         self.graph = NodeGraph(
             self.param.n_v, self.param.n_p, self.param.weights)
         self.leader = Leader(
-            0, self.param.n_v, self.param.extra["init_leader_pos"][0],
+            self.param.extra["init_leader_state"], self.param.n_v,
+            self.param.extra["init_leader_pos"][0],
             self.param.extra["init_leader_pos"][1])
 
         # Initialize Graph, Agent, and Leader values.
