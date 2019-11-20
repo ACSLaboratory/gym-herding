@@ -4,6 +4,8 @@ Distribution Test Class
 Written by: Zahi Kakish (zmk5)
 
 """
+from typing import List
+from typing import Union
 import numpy as np
 from gym_herding.envs.position import to_matrix
 
@@ -18,12 +20,12 @@ class Distribution():
         Square root of the number of vertices.
     n_p : int
         The number of agents to herd.
-    weights : list[int, int]
+    weights : list[float, float]
         The weights applied to the population distribution within the state
         space.
 
     """
-    def __init__(self, n_v, n_p, weights):
+    def __init__(self, n_v: int, n_p: int, weights: List[float]) -> None:
         self._dist = {
             "initial": np.zeros((n_v, n_v)),
             "current": np.zeros((n_v, n_v)),
@@ -49,12 +51,12 @@ class Distribution():
         }
 
     @property
-    def initial(self):
+    def initial(self) -> np.ndarray:
         """ Initial distribution getter property """
         return self._dist["initial"]
 
     @initial.setter
-    def initial(self, matrix):
+    def initial(self, matrix: np.ndarray) -> None:
         """ Initial distribution setter property """
         # if self._status["initial"]:
         #     raise ValueError("Initial Distribution already set.")
@@ -85,12 +87,12 @@ class Distribution():
                              "contain 1 or 0 values.")
 
     @property
-    def current(self):
+    def current(self) -> np.ndarray:
         """ Current distribution getter property """
         return self._dist["current"]
 
     @current.setter
-    def current(self, matrix):
+    def current(self, matrix: np.ndarray) -> None:
         """ Current distribution setter property """
         if matrix.dtype != np.float32:
             raise TypeError("Current must be a np.float32 np.ndarray.")
@@ -98,12 +100,12 @@ class Distribution():
         self._dist["current"] = matrix
 
     @property
-    def target(self):
+    def target(self) -> np.ndarray:
         """ Target distribution getter property """
         return self._dist["target"]
 
     @target.setter
-    def target(self, matrix):
+    def target(self, matrix: np.ndarray) -> None:
         """ Target distribution setter property """
         if self._status["target"]:
             raise ValueError("Target Distribution already set.")
@@ -139,7 +141,8 @@ class Distribution():
             raise ValueError("Target distribution matrix should only " + \
                              "contain 1 or 0 values.")
 
-    def get_node_value(self, i, j, key="target"):
+    def get_node_value(self, i: int, j: int, 
+                       key: str = "target") -> Union[int, float]:
         """
         Get the distribution value for a specific node.
 
@@ -158,7 +161,7 @@ class Distribution():
         mat_i, mat_j = to_matrix(self._param["n_v"], np.array([i, j]))
         return self._dist[key][mat_i, mat_j]
 
-    def set_node_value(self, val, i, j, key="target"):
+    def set_node_value(self, val, i: int, j: int, key: str = "target") -> None:
         """
         Set the distribution value for a specific node.
 
@@ -177,7 +180,8 @@ class Distribution():
         mat_i, mat_j = to_matrix(self._param["n_v"], np.array([i, j]))
         self._dist[key][mat_i, mat_j] = val
 
-    def increment_node_value(self, val, i, j, key="target"):
+    def increment_node_value(self, val: Union[int, float], i: int, j: int,
+                             key: str = "target") -> None:
         """
         increment the distribution value for a specific node.
 
@@ -197,7 +201,7 @@ class Distribution():
         mat_i, mat_j = to_matrix(self._param["n_v"], np.array([i, j]))
         self._dist[key][mat_i, mat_j] += val * self._param["size_fraction"]
 
-    def apply_population(self, key="target"):
+    def apply_population(self, key: str = "target") -> None:
         """ Apply population to distribution. """
         if key not in self._dist:
             raise KeyError("key parameter must be a valid distribution: " +
@@ -222,10 +226,10 @@ class Distribution():
             temp = np.squeeze(np.where(self._dist[key] == 1))
             self._dist[key][temp] *= 1
 
-    def get_agent_count(self, i, j, dist="current"):
+    def get_agent_count(self, i: int, j: int, dist: str = "current") -> int:
         """ Get agent count for each state from distribution """
         return int(self._dist[dist][i, j] / self._param["size_fraction"])
 
-    def reset(self):
+    def reset(self) -> None:
         """ Reset certain mutable class properties """
         self._dist["current"] = np.copy(self._dist["initial"])

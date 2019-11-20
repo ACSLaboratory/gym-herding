@@ -9,6 +9,9 @@ Action Space:
 Written by: Zahi Kakish (zmk5)
 
 """
+from typing import NoReturn
+from typing import Tuple
+from typing import Optional
 import numpy as np
 from gym import Env
 from gym.spaces import Box
@@ -33,7 +36,8 @@ class HerdingEnv(Env):
 
     """
     MOVEMENTS = ["left", "right", "up", "down", "stay"]
-    def __init__(self, hep=None, observation_space=3):
+    def __init__(self, hep: Optional[HerdingEnvParameters] = None,
+                 observation_space: int = 3) -> None:
         # Set immutable params and mutable variables, if applicable.
         self.param = hep
         self.var = {
@@ -52,7 +56,8 @@ class HerdingEnv(Env):
                 raise TypeError("First argument must be a " +
                                 "HerdingEnvParameter object!")
 
-    def initialize(self, hep, observation_space=3):
+    def initialize(self, hep: HerdingEnvParameters,
+                   observation_space: int = 3) -> None:
         """ Initializes the OpenAI Environment """
         # Set immutable params
         self.param = hep
@@ -103,7 +108,7 @@ class HerdingEnv(Env):
         # Initialize rendering environment (matplotlib)
         self._plot.create_figure()
 
-    def step(self, action):
+    def step(self, action: int) -> Tuple[np.ndarray, int, bool, dict]:
         """ Executes the given action """
         # Get new leader state and position from action
         new_lx, new_ly, new_ls, is_out_of_bounds = \
@@ -150,7 +155,7 @@ class HerdingEnv(Env):
 
         return (obs, reward, done, info)
 
-    def reset(self):
+    def reset(self) -> np.ndarray:
         """ Initializies the environment to initial state for next episode """
         self.graph.reset()
         self.graph.update_count()
@@ -161,19 +166,19 @@ class HerdingEnv(Env):
         # Returns the current reset observational space.
         return self.graph.distribution.current
 
-    def render(self, mode='human'):
+    def render(self, mode: str = 'human') -> None:
         """ Displays the environment """
         self._plot.render(self.graph, self.leader)
 
-    def save_render(self, file_name):
+    def save_render(self, file_name: str) -> None:
         """ Save image of the render """
         self._plot.save_render(file_name)
 
-    def close(self):
+    def close(self) -> NoReturn:
         """ Close the environment """
         raise NotImplementedError()
 
-    def is_action_valid(self, action):
+    def is_action_valid(self, action: int) -> bool:
         """ Checks if the leader agent action is valid """
         if action == 0:  # Left
             if self.leader.state % self.param.n_v != 0:
@@ -196,7 +201,7 @@ class HerdingEnv(Env):
 
         return False
 
-    def _initialize_env_objects(self):
+    def _initialize_env_objects(self) -> None:
         """ Initialize environment object values """
         self.graph.distribution.target = self.param.dist["target"]
         self.graph.distribution.initial = self.param.dist["initial"]
@@ -207,15 +212,15 @@ class HerdingEnv(Env):
         self.graph.set_node_neighbors()
         self.graph.update_count()
 
-    def _get_reward(self):
+    def _get_reward(self) -> NoReturn:
         """ Get reward based on results of leader action """
         raise NotImplementedError()
 
-    def _get_observation(self):
+    def _get_observation(self) -> NoReturn:
         """ Get the calculated observation of environment state """
         raise NotImplementedError()
 
-    def _move_herding_agents(self):
+    def _move_herding_agents(self) -> None:
         """ Moves the herding agents within the environment """
         # Get number of agents within the node that the leader is in
         chk_ld = self.graph.node[self.leader.state].agent_count
@@ -253,13 +258,13 @@ class HerdingEnv(Env):
                 self.graph.distribution.increment_node_value(
                     1, new_x, new_y, "current")
 
-    def _move_leader(self, new_ls, new_lx, new_ly):
+    def _move_leader(self, new_ls: int, new_lx: int, new_ly: int) -> None:
         """ Moves the leader to the next position """
         self.leader.state = new_ls
         self.leader.real = np.array([new_lx, new_ly], dtype=np.int8)
         self.leader.visual = np.array([new_lx, new_ly], dtype=np.int8)
 
-    def _valid_action_check(self, action):
+    def _valid_action_check(self, action: int) -> bool:
         """ Checks if the leader agent action is valid """
         if action == 0:  # Left
             if self.leader.state % self.param.n_v != 0:

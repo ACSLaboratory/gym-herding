@@ -4,6 +4,7 @@ Agents Test Class
 Written by: Zahi Kakish (zmk5)
 
 """
+from typing import List
 import numpy as np
 from gym_herding.envs.distribution import Distribution
 
@@ -20,7 +21,7 @@ class Agents():
         Square root of the number of vertices.
     n_p : int
         The number of agents to herd.
-    weights : list[int, int]
+    weights : list[float, float]
         The weights applied to the population distribution within the state
         space.
     agent_type : {'individual', 'fraction'}, optional
@@ -28,7 +29,8 @@ class Agents():
         fraction within a node/vertex.
 
     """
-    def __init__(self, n_v, n_p, weights, agent_type="individual"):
+    def __init__(self, n_v: int, n_p: int, weights: List[float],
+                 agent_type: str = "individual") -> None:
         # Immutable parameter variables
         self._param = {
             "n_v": n_v,
@@ -56,11 +58,11 @@ class Agents():
         self.distribution = Distribution(n_v, n_p, weights)
 
     @property
-    def real(self):
+    def real(self) -> np.ndarray:
         """ Real Position getter property """
         return self._real_positions
 
-    def set_real_pos(self, ind, pos):
+    def set_real_pos(self, ind: int, pos: np.ndarray) -> None:
         """ Real Position setter for individual agent positions """
         if isinstance(pos, np.ndarray):
             self._real_positions[ind, :] = pos
@@ -69,11 +71,11 @@ class Agents():
             raise TypeError("Position parameter must be a np.ndarray.")
 
     @property
-    def visual(self):
+    def visual(self) -> np.ndarray:
         """ Visual Position Getter property """
         return self._visual_positions
 
-    def set_visual_pos(self, ind, pos):
+    def set_visual_pos(self, ind: int, pos: np.ndarray) -> None:
         """ Visual Position setter for individual agent positions """
         if isinstance(pos, np.ndarray):
             self._visual_positions[ind, :] = pos
@@ -81,7 +83,7 @@ class Agents():
         else:
             raise TypeError("Position parameter must be a np.ndarray.")
 
-    def reset(self):
+    def reset(self) -> None:
         """ Reset certain mutable class properties """
         if self._param["type"] == "individual":
             self._real_positions = np.zeros(

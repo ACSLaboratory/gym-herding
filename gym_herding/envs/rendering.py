@@ -4,9 +4,12 @@
 Written by: Zahi Kakish (zmk5)
 
 """
+from typing import List
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+from gym_herding.envs.graph import NodeGraph
+from gym_herding.envs.leader import Leader
 
 
 class HerdingEnvPlotting():
@@ -21,7 +24,7 @@ class HerdingEnvPlotting():
         The population of agents to herd.
 
     """
-    def __init__(self, n_v, n_p):
+    def __init__(self, n_v: int, n_p: int) -> None:
         self.fig = None
         self.axis = None
         self.plots = None
@@ -30,7 +33,7 @@ class HerdingEnvPlotting():
             "n_p": n_p,
         }
 
-    def create_figure(self):
+    def create_figure(self) -> None:
         """ Create figure for rendering """
         plt.ion()
         self.fig = plt.figure(1)
@@ -42,7 +45,8 @@ class HerdingEnvPlotting():
         l_plt, = self.axis.plot([], [], 'r.', markersize=15)
         self.plots = [a_plt, l_plt]
 
-    def render(self, graph, leader, is_initial=False):
+    def render(self, graph: NodeGraph, leader: Leader,
+               is_initial: bool = False) -> None:
         """ Render the motion of the leader and agents on the plot """
         def animate(i):
             """ Animation procedure for Fraction option """
@@ -74,21 +78,21 @@ class HerdingEnvPlotting():
         self.fig.canvas.draw()
         self.fig.canvas.flush_events()
 
-    def reset(self):
+    def reset(self) -> None:
         """ Reset certain mutable class properties """
         pass
 
-    def save_render(self, file_name):
+    def save_render(self, file_name: str) -> None:
         """ Save image of the render """
         self.fig.savefig(file_name)
 
-    def _init(self):
+    def _init(self) -> List[plt.Figure.axes.SubplotBase]:
         """ Initial plotting of leader and agents """
         self.plots[0].set_data([], [], 'bx', markersize=5)
         self.plots[1].set_data([], [], 'r.', markersize=15)
         return self.plots
 
-    def _get_visual_position(self, point):
+    def _get_visual_position(self, point: int) -> float:
         """ Get x or y coordinate for visualization """
         return point / self._param["n_v"] + np.random.uniform() / \
             self._param["n_v"]

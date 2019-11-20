@@ -4,6 +4,8 @@ Leader Class
 Written by: Zahi Kakish (zmk5)
 
 """
+from typing import Union
+from typing import List
 import numpy as np
 
 
@@ -11,7 +13,8 @@ class Leader():
     """
     Leader class
     """
-    def __init__(self, initial_state, n_v, pos_x, pos_y):
+    def __init__(self, initial_state: int, n_v: int, pos_x: int,
+                 pos_y: int) -> None:
         self._param = {
             "n_v": n_v,
             "x": pos_x,  # initial x
@@ -29,12 +32,12 @@ class Leader():
         self.state = initial_state
 
     @property
-    def real(self):
+    def real(self) -> np.ndarray:
         """ Real Position getter property """
         return self._real_position
 
     @real.setter
-    def real(self, pos):
+    def real(self, pos: np.ndarray) -> None:
         """ Real Position setter property """
         if isinstance(pos, np.ndarray):
             self._real_position = pos
@@ -42,7 +45,7 @@ class Leader():
         else:
             raise TypeError("Position parameter must be a np.ndarray.")
 
-    def set_real_pos(self, ind, pos):
+    def set_real_pos(self, ind: int, pos: np.ndarray) -> None:
         """ Real Position setter for individual agent positions """
         if isinstance(pos, np.ndarray):
             self._real_position[ind, :] = pos
@@ -51,12 +54,12 @@ class Leader():
             raise TypeError("Position parameter must be a np.ndarray.")
 
     @property
-    def visual(self):
+    def visual(self) -> np.ndarray:
         """ Visual Position Getter property """
         return self._visual_position
 
     @visual.setter
-    def visual(self, pos):
+    def visual(self, pos: np.ndarray) -> None:
         """ Visual Position setter property """
         if isinstance(pos, np.ndarray):
             self._visual_position = np.array(
@@ -66,7 +69,7 @@ class Leader():
         else:
             raise TypeError("Position parameter must be a np.ndarray.")
 
-    def set_visual_pos(self, ind, pos):
+    def set_visual_pos(self, ind: int, pos: np.ndarray) -> None:
         """ Visual Position setter for individual agent positions """
         if isinstance(pos, np.ndarray):
             self._visual_position[ind, :] = np.array(
@@ -75,7 +78,7 @@ class Leader():
         else:
             raise TypeError("Position parameter must be a np.ndarray.")
 
-    def set_leader_path(self, path):
+    def set_leader_path(self, path: Union[np.ndarray, List[int]]) -> None:
         """ Set the path of states that the leader follows """
         if isinstance(path, (np.ndarray, list)):
             self.path["path"] = path
@@ -85,7 +88,7 @@ class Leader():
         else:
             raise TypeError("path should be a list or np.ndarray.")
 
-    def next_state(self):
+    def next_state(self) -> None:
         """ Move leader to next state in the path """
         if self.path["index"] >= self.path["size"]:
             self.path["index"] = 0
@@ -96,7 +99,7 @@ class Leader():
         # Set state as new step in path.
         self.state = self.path["path"][self.path["index"]]
 
-    def reset(self):
+    def reset(self) -> None:
         """ Reset certain mutable class properties """
         self._real_position = np.array(
             [self._param["x"], self._param["y"]], dtype=np.int8)

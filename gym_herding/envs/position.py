@@ -7,7 +7,7 @@ Author: Zahi Kakish (zmk5)
 import numpy as np
 
 
-def to_matrix(n_v, position):
+def to_matrix(n_v: int, position: np.ndarray) -> np.ndarray:
     """
     Converts position data to matrix form.
 
@@ -33,7 +33,7 @@ def to_matrix(n_v, position):
     # else return 1x2 vector
     return np.array([(n_v - 1) - position[1], position[0]], dtype=np.int8)
 
-def to_plot(n_v, position):
+def to_plot(n_v: int, position: np.ndarray) -> np.ndarray:
     """
     Converts position data to plotting form.
 

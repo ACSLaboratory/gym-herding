@@ -7,6 +7,12 @@ for use in herding scenarios.
 Written by: Zahi Kakish (zmk5)
 
 """
+from typing import Union
+from typing import List
+from typing import Any
+from typing import Dict
+from typing import Tuple
+from typing import Optional
 import numpy as np
 from gym_herding.envs.distribution import Distribution
 from gym_herding.envs.position import to_matrix
@@ -33,7 +39,8 @@ class Node():
 
 
     """
-    def __init__(self, node_id, pos_x, pos_y, max_neighbors=4):
+    def __init__(self, node_id: int, pos_x: int, pos_y: int,
+                 max_neighbors: int = 4) -> None:
         self._node_id = node_id
         self._position = np.array([pos_x, pos_y], dtype=np.int8)
         self._neighbors = 0
@@ -46,32 +53,33 @@ class Node():
         self.max_neighbors = max_neighbors
 
     @property
-    def state_id(self):
+    def state_id(self) -> int:
         """ State ID getter property """
         return self._node_id
 
     @state_id.setter
-    def state_id(self, node_id):
+    def state_id(self, node_id: int) -> None:
         """ State ID setter property """
         self._node_id = node_id
 
     @property
-    def agent_count(self):
+    def agent_count(self) -> int:
         """ Agent count getter property """
         return self._param["agent_count"]
 
     @agent_count.setter
-    def agent_count(self, val):
+    def agent_count(self, val: int) -> None:
         """ Agent count setter property """
         self._param["agent_count"] = val
 
     @property
-    def position(self):
+    def position(self) -> np.ndarray:
         """ Position getter property """
         return self._position
 
     @position.setter
-    def position(self, pos_xy):
+    def position(self,
+                 pos_xy: Union[np.ndarray, Dict[int, int], List[int]]) -> None:
         """ Position setter property """
         if isinstance(pos_xy, np.ndarray):
             self._position = pos_xy
@@ -80,12 +88,12 @@ class Node():
             self._position = np.array([pos_xy[0], pos_xy[1]], dtype=np.int8)
 
     @property
-    def neighbors(self):
+    def neighbors(self) -> np.ndarray:
         """ Neighbors getter property """
         return self._neighbors
 
     @neighbors.setter
-    def neighbors(self, neighbors):
+    def neighbors(self, neighbors: np.ndarray) -> None:
         """ Neighbors setter property """
         if isinstance(neighbors, np.ndarray):
             if (neighbors.shape[0] <= self.max_neighbors and
@@ -101,7 +109,7 @@ class Node():
             raise IndexError("Neighbors should be a (%d x 2) numpy.ndarray." \
                              % self.max_neighbors)
 
-    def set_param(self, key, val, new=False):
+    def set_param(self, key: str, val: Any, new: bool = False) -> None:
         """ something """
         if new or key in self._param:
             self._param[key] = val
@@ -109,7 +117,7 @@ class Node():
         else:
             raise KeyError(str(key) + " is not a valid parameter.")
 
-    def reset(self):
+    def reset(self) -> None:
         """ Reset non-immutable values of Node """
         self._param["agent_count"] = 0
 
@@ -132,7 +140,7 @@ class NodeGraph():
     -------
 
     """
-    def __init__(self, n_v, n_p, weights):
+    def __init__(self, n_v: int, n_p: int, weights: List[float]) -> None:
         self._node_dict = {}
         self.distribution = Distribution(n_v, n_p, weights)
 
@@ -156,14 +164,14 @@ class NodeGraph():
         """ Returns the node dictionary """
         return self._node_dict
 
-    def get_position(self, state):
+    def get_position(self, state: int) -> Optional[np.ndarray]:
         """ Given a state, return the node's xy position """
         if state in self._node_dict:
             return self._node_dict[state].position
 
         return None
 
-    def get_state(self, pos):
+    def get_state(self, pos) -> Optional[int]:
         """ Given an xy position, return the nodes state id """
         for node in self._node_dict.values():
             if all(pos == node.position):
@@ -171,7 +179,7 @@ class NodeGraph():
 
         return None
 
-    def set_node_neighbors(self):
+    def set_node_neighbors(self) -> None:
         """ Set the neighbors for each node. """
         state = 0
         for j in range(0, self._param["n_v"]):
@@ -195,7 +203,7 @@ class NodeGraph():
                 self._node_dict[state].neighbors = np.asarray(temp_neigh)
                 state += 1
 
-    def set_node_positions(self):
+    def set_node_positions(self) -> None:
         """
         Sets individual node XY positions.
 
@@ -213,7 +221,8 @@ class NodeGraph():
                     [i, j], dtype=np.int8)
                 state += 1
 
-    def convert_action_to_node_info(self, old_state, action):
+    def convert_action_to_node_info(self, old_state: int,
+                                    action: int) -> Tuple[int, int, int, bool]:
         """
         Converts a leader movement action to Graph properties.
 
@@ -289,7 +298,7 @@ class NodeGraph():
 
         return (i, j, state_id, is_out_of_bounds)
 
-    def update_count(self):
+    def update_count(self) -> None:
         """ Updates the agent count in each node/vertix """
         for pos in self._param["all_positions"]:
             state = self.get_state(pos)
@@ -298,7 +307,7 @@ class NodeGraph():
                 int(self.distribution.current[mat_i, mat_j] / \
                     self._param["size_fraction"])
 
-    def reset(self):
+    def reset(self) -> None:
         """ Reset non-immutable values in all the Nodes """
         self.distribution.reset()
         for i in range(0, np.power(self._param["n_v"], 2)):

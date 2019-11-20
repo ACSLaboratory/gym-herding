@@ -3,6 +3,9 @@ Herding Environment Parameter Class
 
 Written by: Zahi Kakish (zmk5)
 """
+from typing import Any
+from typing import Union
+from typing import List
 import numpy as np
 
 
@@ -21,7 +24,8 @@ class HerdingEnvParameters():
         space.
 
     """
-    def __init__(self, n_v, n_p, weights):
+    def __init__(self, n_v: int, n_p: int,
+                 weights: Union[List[float], np.ndarray]) -> None:
         self.iter = 0
         self.max_iter = 10000
         self.n_v = n_v
@@ -51,7 +55,7 @@ class HerdingEnvParameters():
             "leader_motion_moves_agents": False,
         }
 
-    def set_agents_distribution(self, val, dist):
+    def set_agents_distribution(self, val: np.ndarray, dist: str) -> None:
         """ Set the herding agents distribution in space. """
         if isinstance(val, np.ndarray):
             if val.shape != (self.n_v, self.n_v):
@@ -63,11 +67,11 @@ class HerdingEnvParameters():
         else:
             raise TypeError("Distribution must be a np.ndarray.")
 
-    def set_leader_position(self, i, j):
+    def set_leader_position(self, i: int, j: int) -> None:
         """ Set an initial postion for the leader. """
         self.extra["init_leader_postion"][0] = i
         self.extra["init_leader_position"][1] = j
 
-    def add_extra_parameter(self, key, val):
+    def add_extra_parameter(self, key: str, val: Any) -> None:
         """ Add an extra parameter, if needed."""
         self.extra[key] = val
