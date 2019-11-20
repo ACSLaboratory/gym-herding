@@ -141,7 +141,7 @@ class Distribution():
             raise ValueError("Target distribution matrix should only " + \
                              "contain 1 or 0 values.")
 
-    def get_node_value(self, i: int, j: int, 
+    def get_node_value(self, i: int, j: int,
                        key: str = "target") -> Union[int, float]:
         """
         Get the distribution value for a specific node.

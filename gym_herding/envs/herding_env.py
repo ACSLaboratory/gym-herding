@@ -236,9 +236,10 @@ class HerdingEnv(Env):
             # Squeeze reduces too much if chk_ld == 1
             toss = np.random.rand(1, chk_ld)[0]
 
-        for i in range(chk_ld):
-            temp_neigh = self.graph.node[self.leader.state].neighbors
+        # Get available neighboring nodes from where the leader is located
+        temp_neigh = self.graph.node[self.leader.state].neighbors
 
+        for i in range(chk_ld):
             if toss[i] <= len(temp_neigh) * self.param.extra["jump_weight"]:
                 # Get the new state for the agent to jump to
                 rand_perm = np.random.permutation(len(temp_neigh))
