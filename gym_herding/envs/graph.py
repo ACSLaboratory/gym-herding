@@ -16,7 +16,6 @@ from typing import Optional
 import numpy as np
 from gym_herding.envs.distribution import Distribution
 from gym_herding.envs.position import to_matrix
-from gym_herding.envs.position import to_plot
 
 
 class Node():
