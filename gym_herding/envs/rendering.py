@@ -5,11 +5,16 @@ Written by: Zahi Kakish (zmk5)
 
 """
 from typing import List
+from typing import TypeVar
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from gym_herding.envs.graph import NodeGraph
 from gym_herding.envs.leader import Leader
+
+
+# Used for documentation purposes only
+PlotType = TypeVar('PlotType')
 
 
 class HerdingEnvPlotting():
@@ -86,7 +91,7 @@ class HerdingEnvPlotting():
         """ Save image of the render """
         self.fig.savefig(file_name)
 
-    def _init(self) -> List[plt.Figure.axes.SubplotBase]:
+    def _init(self) -> List[PlotType]:
         """ Initial plotting of leader and agents """
         self.plots[0].set_data([], [], 'bx', markersize=5)
         self.plots[1].set_data([], [], 'r.', markersize=15)
