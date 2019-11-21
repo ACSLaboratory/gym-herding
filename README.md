@@ -1,8 +1,9 @@
 # gym-herding
+
 Leader-agent herding OpenAI Gym Environment
 
-
 ## Setup
+
 ### Installation
 
 To install this gym environment, please clone the repository to the directory you desire:
