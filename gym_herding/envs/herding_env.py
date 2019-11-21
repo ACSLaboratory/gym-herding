@@ -237,27 +237,29 @@ class HerdingEnv(Env):
             toss = np.random.rand(1, chk_ld)[0]
 
         # Get available neighboring nodes from where the leader is located
-        temp_neigh = self.graph.node[self.leader.state].neighbors
+        avail_neighbors = self.graph.node[self.leader.state].neighbors
 
-        for i in range(chk_ld):
-            if toss[i] <= len(temp_neigh) * self.param.extra["jump_weight"]:
-                # Get the new state for the agent to jump to
-                rand_perm = np.random.permutation(len(temp_neigh))
-                jump_state = self.graph.get_state(
-                    temp_neigh[rand_perm[0], :])
+        # Get number of agents that will jump and where they jump
+        jumping_agents = len(np.where(
+            toss <= len(avail_neighbors) * self.param.extra["jump_weight"])[0])
+        rand_perm = np.random.randint(
+            0, len(avail_neighbors) + 1, jumping_agents)
 
-                # Helpful variables
-                old_x, old_y = self.graph.get_position(self.leader.state)
-                new_x, new_y = self.graph.get_position(jump_state)
+        for i in range(len(avail_neighbors)):
+            jump_count = len(np.where(rand_perm == i)[0])
+            jump_state = self.graph.get_state(avail_neighbors[i, :])
 
-                # Update current distribution map
-                # TODO: May need to remove these vvvv
-                self.graph.node[self.leader.state].agent_count -= 1
-                self.graph.node[jump_state].agent_count += 1
-                self.graph.distribution.increment_node_value(
-                    -1, old_x, old_y, "current")
-                self.graph.distribution.increment_node_value(
-                    1, new_x, new_y, "current")
+            # Helpful variables
+            old_x, old_y = self.graph.get_position(self.leader.state)
+            new_x, new_y = self.graph.get_position(jump_state)
+
+            # Update current distribution map
+            self.graph.node[self.leader.state].agent_count -= jump_count
+            self.graph.node[jump_state].agent_count += jump_count
+            self.graph.distribution.increment_node_value(
+                -1 * jump_count, old_x, old_y, "current")
+            self.graph.distribution.increment_node_value(
+                jump_count, new_x, new_y, "current")
 
     def _move_leader(self, new_ls: int, new_lx: int, new_ly: int) -> None:
         """ Moves the leader to the next position """
