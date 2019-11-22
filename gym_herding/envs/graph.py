@@ -258,44 +258,56 @@ class NodeGraph():
         state_id = None
         is_out_of_bounds = False
         if action == 0:  # Left
-            if old_state % self._param["n_v"] != 0:
-                state_id = old_state - 1
-
-            else:
-                state_id = old_state
-                is_out_of_bounds = True
+            state_id, is_out_of_bounds = self.action_left(old_state)
 
         elif action == 1:  # Right
-            if (old_state  + 1) % self._param["n_v"] != 0:
-                state_id = old_state + 1
-
-            else:
-                state_id = old_state
-                is_out_of_bounds = True
+            state_id, is_out_of_bounds = self.action_right(old_state)
 
         elif action == 2:  # Up
-            if old_state < (self._param["n_v"] * (self._param["n_v"] - 1)):
-                state_id = old_state + self._param["n_v"]
-
-            else:
-                state_id = old_state
-                is_out_of_bounds = True
+            state_id, is_out_of_bounds = self.action_up(old_state)
 
         elif action == 3:  # Down
-            if old_state > (self._param["n_v"] - 1):
-                state_id = old_state - self._param["n_v"]
-
-            else:
-                state_id = old_state
-                is_out_of_bounds = True
+            state_id, is_out_of_bounds = self.action_down(old_state)
 
         elif action == 4:  # Stay
-            state_id = old_state
+            state_id, is_out_of_bounds = self.action_down(old_state)
 
         # Get new position from action
         i, j = self._node_dict[state_id].position
 
         return (i, j, state_id, is_out_of_bounds)
+
+    def action_left(self, old_state: int) -> Tuple[int, bool]:
+        """ Node position change and boundary bool for leader moving left """
+        if old_state % self._param["n_v"] != 0:
+            return (old_state - 1, False)
+
+        return (old_state, True)
+
+    def action_right(self, old_state: int) -> Tuple[int, bool]:
+        """ Node position change and boundary bool for leader moving right """
+        if (old_state  + 1) % self._param["n_v"] != 0:
+            return (old_state + 1, False)
+
+        return (old_state, True)
+
+    def action_up(self, old_state: int) -> Tuple[int, bool]:
+        """ Node position change and boundary bool for leader moving up """
+        if old_state < (self._param["n_v"] * (self._param["n_v"] - 1)):
+            return (old_state + self._param["n_v"], False)
+
+        return (old_state, True)
+
+    def action_down(self, old_state: int) -> Tuple[int, bool]:
+        """ Node position change and boundary bool for leader moving down """
+        if old_state > (self._param["n_v"] - 1):
+            return (old_state - self._param["n_v"], False)
+
+        return (old_state, True)
+
+    def action_stay(self, old_state: int) -> Tuple[int, bool]:
+        """ Node position change and boundary bool for leader staying """
+        return (old_state, True)
 
     def update_count(self) -> None:
         """ Updates the agent count in each node/vertix """
