@@ -22,10 +22,14 @@ class HerdingEnvParameters():
     weights : list
         The weight applied to the population distribution within the state
         space.
+    beta : float
+        Jump weight used by control matrix B in single linear system ODE
+        representing a Kolmogorov forward equation.
 
     """
     def __init__(self, n_v: int, n_p: int,
-                 weights: Union[List[float], np.ndarray]) -> None:
+                 weights: Union[List[float], np.ndarray],
+                 beta: float = 0.1) -> None:
         self.iter = 0
         self.max_iter = 10000
         self.n_v = n_v
@@ -51,9 +55,20 @@ class HerdingEnvParameters():
             "init_leader_pos": np.zeros(2, dtype=np.int8),
             "t": 0,
             "dt": 0.1,
-            "jump_weight": 0.1,
+            "jump_weight": beta,
             "leader_motion_moves_agents": False,
         }
+
+
+    @property
+    def beta(self) -> float:
+        """ Beta value getter (Jumping Weight) """
+        return self.extra["jump_weight"]
+
+    @beta.setter
+    def beta(self, new_beta: float) -> None:
+        """ Beta value setter (Jumping Weight) """
+        self.extra["jump_weight"] = new_beta
 
     def set_agents_distribution(self, val: np.ndarray, dist: str) -> None:
         """ Set the herding agents distribution in space. """
