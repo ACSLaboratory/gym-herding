@@ -6,10 +6,13 @@ Written by: Zahi Kakish (zmk5)
 """
 from typing import List
 from typing import TypeVar
+
 import numpy as np
+
 import matplotlib.pyplot as plt
 import matplotlib.patches as mplpatches
 import matplotlib.path as mplpath
+
 from matplotlib.animation import FuncAnimation
 from gym_herding.envs.graph import NodeGraph
 from gym_herding.envs.leader import Leader

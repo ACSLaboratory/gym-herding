@@ -5,7 +5,9 @@ Written by: Zahi Kakish (zmk5)
 
 """
 from typing import List
+
 import numpy as np
+
 from gym_herding.envs.distribution import Distribution
 
 

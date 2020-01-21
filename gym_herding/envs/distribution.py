@@ -6,7 +6,9 @@ Written by: Zahi Kakish (zmk5)
 """
 from typing import List
 from typing import Union
+
 import numpy as np
+
 from gym_herding.envs.position import to_matrix
 
 

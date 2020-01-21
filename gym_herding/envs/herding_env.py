@@ -12,10 +12,13 @@ Written by: Zahi Kakish (zmk5)
 from typing import NoReturn
 from typing import Tuple
 from typing import Optional
+
 import numpy as np
+
 from gym import Env
 from gym.spaces import Box
 from gym.spaces import Discrete
+
 from gym_herding.envs.graph import NodeGraph
 from gym_herding.envs.leader import Leader
 from gym_herding.envs.parameters import HerdingEnvParameters
