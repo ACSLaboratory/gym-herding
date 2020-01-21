@@ -10,7 +10,10 @@ Written by: Zahi Kakish (zmk5)
 from typing import List
 from typing import Tuple
 from typing import Optional
+from typing import Dict
+
 import numpy as np
+
 from gym_herding.envs.node import Node
 from gym_herding.envs.distribution import Distribution
 from gym_herding.envs.position import to_matrix
@@ -35,7 +38,7 @@ class NodeGraph():
 
     """
     def __init__(self, n_v: int, n_p: int, weights: List[float]) -> None:
-        self._node_dict = {}
+        self._node_dict: Dict[int, Node] = {}
         self.distribution = Distribution(n_v, n_p, weights)
 
         # Instantiate n_v^2 number of nodes
@@ -114,6 +117,11 @@ class NodeGraph():
                 self._node_dict[state].position = np.array(
                     [i, j], dtype=np.int8)
                 state += 1
+
+    def set_node_jump_rates(self, beta: float) -> None:
+        """ Sets individual node jump rates (beta value) """
+        for i in range(0, self._param["total_states"]):
+            self._node_dict[i].beta = beta
 
     def convert_action_to_node_info(self, old_state: int,
                                     action: int) -> Tuple[int, int, int, bool]:

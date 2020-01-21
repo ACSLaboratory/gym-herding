@@ -43,9 +43,21 @@ class Node():
             "agent_count": 0,
             "init_pos_x": pos_x,
             "init_pos_y": pos_y,
+            "jump_weight": 0.1,
         }
         self.num_of_neighbors = 0
         self.max_neighbors = max_neighbors
+        self.beta = 0.1  # Jump Weight
+
+    @property
+    def beta(self) -> float:
+        """ Beta value getter (Jumping Weight) """
+        return self._param["jump_weight"]
+
+    @beta.setter
+    def beta(self, new_beta: float) -> None:
+        """ Beta value setter (Jumping Weight) """
+        self._param["jump_weight"] = new_beta
 
     @property
     def state_id(self) -> int:

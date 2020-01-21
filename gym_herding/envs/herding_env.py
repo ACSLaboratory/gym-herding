@@ -74,6 +74,9 @@ class HerdingEnv(Env):
             self.param.extra["init_leader_pos"][0],
             self.param.extra["init_leader_pos"][1])
 
+        # Set Node Jump Weight (Beta)
+        self.graph.set_node_jump_rates(self.param.extra["jump_weight"])
+
         # Initialize Graph, Agent, and Leader values.
         self._initialize_env_objects()
 
@@ -224,6 +227,7 @@ class HerdingEnv(Env):
         """ Moves the herding agents within the environment """
         # Get number of agents within the node that the leader is in
         chk_ld = self.graph.node[self.leader.state].agent_count
+        beta = self.graph.node[self.leader.state].beta  # Jump Weight
 
         # Increment time
         self.param.extra["t"] += self.param.extra["dt"]
@@ -240,8 +244,7 @@ class HerdingEnv(Env):
         avail_neighbors = self.graph.node[self.leader.state].neighbors
 
         # Get number of agents that will jump and where they jump
-        jumping_agents = len(np.where(
-            toss <= len(avail_neighbors) * self.param.extra["jump_weight"])[0])
+        jumping_agents = len(np.where(toss <= len(avail_neighbors) * beta)[0])
         rand_perm = np.random.randint(
             0, len(avail_neighbors) + 1, jumping_agents)
 
@@ -266,26 +269,3 @@ class HerdingEnv(Env):
         self.leader.state = new_ls
         self.leader.real = np.array([new_lx, new_ly], dtype=np.int8)
         self.leader.visual = np.array([new_lx, new_ly], dtype=np.int8)
-
-    def _valid_action_check(self, action: int) -> bool:
-        """ Checks if the leader agent action is valid """
-        if action == 0:  # Left
-            if self.leader.state % self.param.n_v != 0:
-                return True
-
-        elif action == 1:  # Right
-            if (self.leader.state  + 1) % self.param.n_v != 0:
-                return True
-
-        elif action == 2:  # Up
-            if self.leader.state < (self.param.n_v * (self.param.n_v - 1)):
-                return True
-
-        elif action == 3:  # Down
-            if self.leader.state > self.param.n_v:
-                return True
-
-        elif action == 5:  # Stay
-            return True
-
-        return False
