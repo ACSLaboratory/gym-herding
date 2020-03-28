@@ -173,7 +173,7 @@ class NodeGraph():
             state_id, is_out_of_bounds = self.action_down(old_state)
 
         elif action == 4:  # Stay
-            state_id, is_out_of_bounds = self.action_down(old_state)
+            state_id, is_out_of_bounds = self.action_stay(old_state)
 
         # Get new position from action
         i, j = self._node_dict[state_id].position
