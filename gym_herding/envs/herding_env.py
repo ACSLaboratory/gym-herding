@@ -19,10 +19,10 @@ from gym import Env
 from gym.spaces import Box
 from gym.spaces import Discrete
 
-from gym_herding.envs.graph import NodeGraph
-from gym_herding.envs.leader import Leader
-from gym_herding.envs.parameters import HerdingEnvParameters
-from gym_herding.envs.rendering import HerdingEnvPlotting
+from gym_herding.envs.graph.graph import NodeGraph
+from gym_herding.envs.graph.leader import Leader
+from gym_herding.envs.utils.parameters import HerdingEnvParameters
+from gym_herding.envs.plotting.rendering import HerdingEnvPlotting
 
 
 class HerdingEnv(Env):

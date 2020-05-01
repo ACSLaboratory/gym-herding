@@ -14,8 +14,8 @@ import matplotlib.patches as mplpatches
 import matplotlib.path as mplpath
 
 from matplotlib.animation import FuncAnimation
-from gym_herding.envs.graph import NodeGraph
-from gym_herding.envs.leader import Leader
+from gym_herding.envs.graph.graph import NodeGraph
+from gym_herding.envs.graph.leader import Leader
 
 
 # Used for documentation purposes only

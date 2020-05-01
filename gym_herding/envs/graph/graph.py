@@ -14,9 +14,9 @@ from typing import Dict
 
 import numpy as np
 
-from gym_herding.envs.node import Node
-from gym_herding.envs.distribution import Distribution
-from gym_herding.envs.position import to_matrix
+from gym_herding.envs.graph.node import Node
+from gym_herding.envs.graph.distribution import Distribution
+from gym_herding.envs.utils.position import to_matrix
 
 
 class NodeGraph():

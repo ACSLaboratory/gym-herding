@@ -8,7 +8,7 @@ Written by: Zahi Kakish (zmk5)
 
 """
 import numpy as np
-from gym_herding.envs.parameters import HerdingEnvParameters
+from gym_herding.envs.utils.parameters import HerdingEnvParameters
 from herding_env_ihnerited_class import HerdingEnvInheritanceExample
 
 

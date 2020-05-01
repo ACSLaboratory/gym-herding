@@ -8,7 +8,7 @@ from typing import List
 
 import numpy as np
 
-from gym_herding.envs.distribution import Distribution
+from gym_herding.envs.graph.distribution import Distribution
 
 
 class Agents():
