@@ -30,7 +30,8 @@ class HerdingEnvParameters():
     """
     def __init__(self, n_v: int, n_p: int,
                  weights: Union[List[float], np.ndarray],
-                 beta: float = 0.1) -> None:
+                 beta: float = 0.1,
+                 visualization: str = "graph") -> None:
         self.iter = 0
         self.max_iter = 10000
         self.n_v = n_v
@@ -58,6 +59,7 @@ class HerdingEnvParameters():
             "dt": 0.1,
             "jump_weight": beta,
             "leader_motion_moves_agents": False,
+            "visualization": visualization,
         }
 
 

@@ -23,6 +23,7 @@ from gym_herding.envs.graph.graph import NodeGraph
 from gym_herding.envs.graph.leader import Leader
 from gym_herding.envs.utils.parameters import HerdingEnvParameters
 from gym_herding.envs.plotting.rendering import HerdingEnvPlotting
+from gym_herding.envs.plotting.bar import HerdingEnvPlottingBar
 
 
 class HerdingEnv(Env):
@@ -59,15 +60,19 @@ class HerdingEnv(Env):
                 raise TypeError("First argument must be a " +
                                 "HerdingEnvParameter object!")
 
-    def initialize(self, hep: HerdingEnvParameters,
+    def initialize(self,
+                   hep: HerdingEnvParameters,
                    observation_space: int = 3) -> None:
         """ Initializes the OpenAI Environment """
         # Set immutable params
         self.param = hep
 
         # Set plotting class
-        self._plot = HerdingEnvPlotting(
-            self.param.n_v, self.param.n_p)
+        if self.param.extra["visualization"] == "graph":
+            self._plot = HerdingEnvPlotting(self.param.n_v, self.param.n_p)
+
+        else:
+            self._plot = HerdingEnvPlottingBar(self.param.n_v, self.param.n_p)
 
         # Instantiate Graph, Agents, and Leader object.
         self.graph = NodeGraph(
