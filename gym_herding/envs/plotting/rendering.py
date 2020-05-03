@@ -88,7 +88,7 @@ class HerdingEnvPlotting():
 
     def reset(self) -> None:
         """ Reset certain mutable class properties """
-        pass
+        raise NotImplementedError
 
     def save_render(self, file_name: str) -> None:
         """ Save image of the render """
