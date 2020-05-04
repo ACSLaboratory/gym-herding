@@ -39,8 +39,9 @@ class HerdingEnvPlottingBar():
         self._param = {
             "n_v": n_v,
             "n_p": n_p,
+            "target": np.zeros(n_v * n_v),
             "vertex_x_bar": list(range(1, n_v * n_v + 1)),
-            "vertex_x_bar_labels": [str(i) for i in range(1, n_v * n_v + 1)]
+            "vertex_x_bar_labels": [str(i) for i in range(1, n_v * n_v + 1)],
         }
 
     def create_figure(self) -> None:
@@ -62,12 +63,15 @@ class HerdingEnvPlottingBar():
         self.axis[1].set_xticks(
             self._param["vertex_x_bar"], self._param["vertex_x_bar_labels"])
         self.axis[1].set_yticks(np.linspace(0, 1, 6))
-        b_plt = self.axis[1].bar(
+        b_target_plt = self.axis[1].bar(
+            self._param["vertex_x_bar"],
+            self._param["target"], color="red")
+        b_current_plt = self.axis[1].bar(
             self._param["vertex_x_bar"],
             np.zeros(self._param["n_v"] * self._param["n_v"]))
 
         # Put all animated plot features within a single list
-        self.plots = [l_plt, b_plt]
+        self.plots = [l_plt, b_target_plt, b_current_plt]
 
     def render(self, graph: NodeGraph, leader: Leader,
                is_initial: bool = False) -> None:
@@ -77,12 +81,18 @@ class HerdingEnvPlottingBar():
             # Set leader motion subplot data
             self.plots[0].set_data(leader.visual[0], leader.visual[1])
 
-            # Set agent density bar graph data
+            # Get target and current agent density bar graph data
+            target_plot_data = []
+            for j in range(self._param["n_v"] - 1, -1, -1):
+                for k in range(0, self._param["n_v"]):
+                    target_plot_data.append(graph.distribution.target[j, k])
+
             bar_plot_data = []
             for node in graph:
                 agent_density = node.agent_count / self._param["n_p"]
                 bar_plot_data.append(agent_density)
 
+            # Set target and current agent density bar graph data
             self.axis[1].clear()
             self.axis[1].set_xlim(0, self._param["n_v"] * self._param["n_v"] + 1)
             self.axis[1].set_ylim(0, 1)
@@ -90,6 +100,8 @@ class HerdingEnvPlottingBar():
                 self._param["vertex_x_bar"], self._param["vertex_x_bar_labels"])
             self.axis[1].set_yticks(np.linspace(0, 1, 6))
             self.plots[1] = self.axis[1].bar(
+                self._param["vertex_x_bar"], target_plot_data, color="red")
+            self.plots[2] = self.axis[1].bar(
                 self._param["vertex_x_bar"], bar_plot_data)
 
             # return new data to FuncAnimation
