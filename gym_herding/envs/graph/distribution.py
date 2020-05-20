@@ -143,6 +143,11 @@ class Distribution():
             raise ValueError("Target distribution matrix should only " + \
                              "contain 1 or 0 values.")
 
+    @property
+    def difference(self) -> np.ndarray:
+        """ Difference between Target and Current Distribution """
+        return self._dist["target"] - self._dist["current"]
+
     def get_node_value(self, i: int, j: int,
                        key: str = "target") -> Union[int, float]:
         """
