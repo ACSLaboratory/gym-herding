@@ -1,7 +1,8 @@
 """
-Herding Environment Parameter Class
+Herding Environment Parameter Class.
 
 Written by: Zahi Kakish (zmk5)
+
 """
 from typing import Any
 from typing import Union
@@ -28,10 +29,12 @@ class HerdingEnvParameters():
         representing a Kolmogorov forward equation.
 
     """
+
     def __init__(self, n_v: int, n_p: int,
                  weights: Union[List[float], np.ndarray],
                  beta: float = 0.1,
-                 visualization: str = "graph") -> None:
+                 visualization: str = 'graph') -> None:
+        """Initialize the HerdingEnvParameters Class."""
         self.iter = 0
         self.max_iter = 10000
         self.n_v = n_v
@@ -40,7 +43,7 @@ class HerdingEnvParameters():
         # Set weights
         if isinstance(weights, (list, np.ndarray)):
             if len(weights) != 2:
-                raise ValueError("Can only be two weight values.")
+                raise ValueError('Can only be two weight values.')
 
             self.weights = weights
 
@@ -48,48 +51,47 @@ class HerdingEnvParameters():
             self.weights = [1/10, 9/10]
 
         self.dist = {
-            "target": 0,
-            "initial": 0,
+            'target': 0,
+            'initial': 0,
         }
 
         self.extra = {
-            "init_leader_state": 0,
-            "init_leader_pos": np.zeros(2, dtype=np.int8),
-            "t": 0,
-            "dt": 0.1,
-            "jump_weight": beta,
-            "leader_motion_moves_agents": False,
-            "visualization": visualization,
+            'init_leader_state': 0,
+            'init_leader_pos': np.zeros(2, dtype=np.int8),
+            't': 0,
+            'dt': 0.1,
+            'jump_weight': beta,
+            'leader_motion_moves_agents': False,
+            'visualization': visualization,
         }
-
 
     @property
     def beta(self) -> float:
-        """ Beta value getter (Jumping Weight) """
-        return self.extra["jump_weight"]
+        """Beta value getter (Jumping Weight)."""
+        return self.extra['jump_weight']
 
     @beta.setter
     def beta(self, new_beta: float) -> None:
-        """ Beta value setter (Jumping Weight) """
-        self.extra["jump_weight"] = new_beta
+        """Beta value setter (Jumping Weight)."""
+        self.extra['jump_weight'] = new_beta
 
     def set_agents_distribution(self, val: np.ndarray, dist: str) -> None:
-        """ Set the herding agents distribution in space. """
+        """Set the herding agents distribution in space."""
         if isinstance(val, np.ndarray):
             if val.shape != (self.n_v, self.n_v):
-                raise ValueError("Distribution must be n_v x n_v")
+                raise ValueError('Distribution must be n_v x n_v')
 
             # Set distribution as value
             self.dist[dist] = val
 
         else:
-            raise TypeError("Distribution must be a np.ndarray.")
+            raise TypeError('Distribution must be a np.ndarray.')
 
     def set_leader_position(self, i: int, j: int) -> None:
-        """ Set an initial postion for the leader. """
-        self.extra["init_leader_postion"][0] = i
-        self.extra["init_leader_position"][1] = j
+        """Set an initial postion for the leader."""
+        self.extra['init_leader_postion'][0] = i
+        self.extra['init_leader_position'][1] = j
 
     def add_extra_parameter(self, key: str, val: Any) -> None:
-        """ Add an extra parameter, if needed."""
+        """Add an extra parameter, if needed."""
         self.extra[key] = val

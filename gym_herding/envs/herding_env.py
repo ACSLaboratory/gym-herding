@@ -22,13 +22,13 @@ from gym.spaces import Discrete
 from gym_herding.envs.graph.graph import NodeGraph
 from gym_herding.envs.graph.leader import Leader
 from gym_herding.envs.utils.parameters import HerdingEnvParameters
-from gym_herding.envs.plotting.rendering import HerdingEnvPlotting
-from gym_herding.envs.plotting.bar import HerdingEnvPlottingBar
+from gym_herding.envs.plotting.agent_view import HerdingEnvPlotting
+from gym_herding.envs.plotting.bar_view import HerdingEnvPlottingBar
 
 
 class HerdingEnv(Env):
     """
-    Herding OpenAI Environment
+    Herding OpenAI Environment.
 
     Parameters
     ----------
@@ -39,36 +39,37 @@ class HerdingEnv(Env):
         `step()` method and used by the remainder of the `HerdingEnv`.
 
     """
-    MOVEMENTS = ["left", "right", "up", "down", "stay"]
+
     def __init__(self, hep: Optional[HerdingEnvParameters] = None,
                  observation_space: int = 3) -> None:
+        """Initialize the HerdingEnv Class."""
         # Set immutable params and mutable variables, if applicable.
         self.param = hep
         self.var = {
-            "is_out_of_bounds": False,
+            'is_out_of_bounds': False,
         }
 
         if self.param is None:
-            print("Please provide environment parameters in the " + \
-                  "HerdingEnvParamters object\nbefore continuing!")
+            print('Please provide environment parameters in the ' + \
+                  'HerdingEnvParamters object\nbefore continuing!')
 
         else:
             if isinstance(hep, HerdingEnvParameters):
                 self.initialize(hep, observation_space)
 
             else:
-                raise TypeError("First argument must be a " +
-                                "HerdingEnvParameter object!")
+                raise TypeError('First argument must be a ' +
+                                'HerdingEnvParameter object!')
 
     def initialize(self,
                    hep: HerdingEnvParameters,
                    observation_space: int = 3) -> None:
-        """ Initializes the OpenAI Environment """
+        """Initializes the OpenAI Environment."""
         # Set immutable params
         self.param = hep
 
         # Set plotting class
-        if self.param.extra["visualization"] == "graph":
+        if self.param.extra['visualization'] == 'graph':
             self._plot = HerdingEnvPlotting(self.param.n_v, self.param.n_p)
 
         else:
@@ -78,12 +79,12 @@ class HerdingEnv(Env):
         self.graph = NodeGraph(
             self.param.n_v, self.param.n_p, self.param.weights)
         self.leader = Leader(
-            self.param.extra["init_leader_state"], self.param.n_v,
-            self.param.extra["init_leader_pos"][0],
-            self.param.extra["init_leader_pos"][1])
+            self.param.extra['init_leader_state'], self.param.n_v,
+            self.param.extra['init_leader_pos'][0],
+            self.param.extra['init_leader_pos'][1])
 
         # Set Node Jump Weight (Beta)
-        self.graph.set_node_jump_rates(self.param.extra["jump_weight"])
+        self.graph.set_node_jump_rates(self.param.extra['jump_weight'])
 
         # Initialize Graph, Agent, and Leader values.
         self._initialize_env_objects()
@@ -120,21 +121,21 @@ class HerdingEnv(Env):
         self._plot.create_figure()
 
     def step(self, action: int) -> Tuple[np.ndarray, int, bool, dict]:
-        """ Executes the given action """
+        """Executes the given action."""
         # Get new leader state and position from action
         new_lx, new_ly, new_ls, is_out_of_bounds = \
             self.graph.convert_action_to_node_info(self.leader.state, action)
 
         # If action takes leader out of bounds, change info state to say that
         # occured.
-        self.var["is_out_of_bounds"] = is_out_of_bounds
+        self.var['is_out_of_bounds'] = is_out_of_bounds
 
         # Apply changes to leaders position and state onto the class
         self._move_leader(new_ls, new_lx, new_ly)
 
         # Apply repulsive effect of leader in new location on those local
         # herding agents.
-        if self.param.extra["leader_motion_moves_agents"]:
+        if self.param.extra['leader_motion_moves_agents']:
             self._move_herding_agents()
 
         # Apply repulsive effect of leader in new location on those local
@@ -152,9 +153,9 @@ class HerdingEnv(Env):
 
         # Write info
         info = {
-            "is_out_of_bounds": self.var["is_out_of_bounds"],
-            "leader_state": self.leader.state,
-            "leader_pos": [new_lx, new_ly],
+            'is_out_of_bounds': self.var['is_out_of_bounds'],
+            'leader_state': self.leader.state,
+            'leader_pos': [new_lx, new_ly],
         }
 
         # Check for end of episode
@@ -167,30 +168,30 @@ class HerdingEnv(Env):
         return (obs, reward, done, info)
 
     def reset(self) -> np.ndarray:
-        """ Initializies the environment to initial state for next episode """
+        """Initializies the environment to initial state for next episode."""
         self.graph.reset()
         self.graph.update_count()
         self.leader.reset()
         self.param.iter = 0
-        self.param.extra["t"] = 0
+        self.param.extra['t'] = 0
 
         # Returns the current reset observational space.
         return self.graph.distribution.current
 
     def render(self, mode: str = 'human') -> None:
-        """ Displays the environment """
+        """Displays the environment."""
         self._plot.render(self.graph, self.leader)
 
     def save_render(self, file_name: str) -> None:
-        """ Save image of the render """
+        """Save image of the render."""
         self._plot.save_render(file_name)
 
     def close(self) -> NoReturn:
-        """ Close the environment """
+        """Close the environment."""
         raise NotImplementedError()
 
     def is_action_valid(self, action: int) -> bool:
-        """ Checks if the leader agent action is valid """
+        """Checks if the leader agent action is valid."""
         if action == 0:  # Left
             if self.leader.state % self.param.n_v != 0:
                 return True
@@ -213,10 +214,10 @@ class HerdingEnv(Env):
         return False
 
     def _initialize_env_objects(self) -> None:
-        """ Initialize environment object values """
-        self.graph.distribution.target = self.param.dist["target"]
-        self.graph.distribution.initial = self.param.dist["initial"]
-        for dist in ["initial", "current", "target"]:
+        """Initialize environment object values."""
+        self.graph.distribution.target = self.param.dist['target']
+        self.graph.distribution.initial = self.param.dist['initial']
+        for dist in ['initial', 'current', 'target']:
             self.graph.distribution.apply_population(dist)
 
         self.graph.set_node_positions()
@@ -224,21 +225,21 @@ class HerdingEnv(Env):
         self.graph.update_count()
 
     def _get_reward(self) -> NoReturn:
-        """ Get reward based on results of leader action """
+        """Get reward based on results of leader action."""
         raise NotImplementedError()
 
     def _get_observation(self) -> NoReturn:
-        """ Get the calculated observation of environment state """
+        """Get the calculated observation of environment state."""
         raise NotImplementedError()
 
     def _move_herding_agents(self) -> None:
-        """ Moves the herding agents within the environment """
+        """Moves the herding agents within the environment."""
         # Get number of agents within the node that the leader is in
         chk_ld = self.graph.node[self.leader.state].agent_count
         beta = self.graph.node[self.leader.state].beta  # Jump Weight
 
         # Increment time
-        self.param.extra["t"] += self.param.extra["dt"]
+        self.param.extra['t'] += self.param.extra['dt']
 
         # Generate random number to see if agent should change node
         if chk_ld != 1:
@@ -268,12 +269,12 @@ class HerdingEnv(Env):
             self.graph.node[self.leader.state].agent_count -= jump_count
             self.graph.node[jump_state].agent_count += jump_count
             self.graph.distribution.increment_node_value(
-                -1 * jump_count, old_x, old_y, "current")
+                -1 * jump_count, old_x, old_y, 'current')
             self.graph.distribution.increment_node_value(
-                jump_count, new_x, new_y, "current")
+                jump_count, new_x, new_y, 'current')
 
     def _move_leader(self, new_ls: int, new_lx: int, new_ly: int) -> None:
-        """ Moves the leader to the next position """
+        """Moves the leader to the next position."""
         self.leader.state = new_ls
         self.leader.real = np.array([new_lx, new_ly], dtype=np.int8)
         self.leader.visual = np.array([new_lx, new_ly], dtype=np.int8)

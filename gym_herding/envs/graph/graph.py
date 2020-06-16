@@ -1,5 +1,5 @@
 """
-Graph Class
+Graph Class.
 
 Using this class, a grid node-graph may be constructed
 for use in herding scenarios.
@@ -37,7 +37,9 @@ class NodeGraph():
     -------
 
     """
+
     def __init__(self, n_v: int, n_p: int, weights: List[float]) -> None:
+        """Initialize the NodeGraph class."""
         self._node_dict: Dict[int, Node] = {}
         self.distribution = Distribution(n_v, n_p, weights)
 
@@ -47,29 +49,29 @@ class NodeGraph():
 
         # Immutable parameter variables
         self._param = {
-            "n_v": n_v,
-            "n_p": n_p,
-            "weights": weights,
-            "size_fraction": 1 / n_p,
-            "total_states": np.power(n_v, 2),
-            "iter_count": 0,
-            "all_positions": [[i, j] for i in range(n_v) for j in range(n_v)],
+            'n_v': n_v,
+            'n_p': n_p,
+            'weights': weights,
+            'size_fraction': 1 / n_p,
+            'total_states': np.power(n_v, 2),
+            'iter_count': 0,
+            'all_positions': [[i, j] for i in range(n_v) for j in range(n_v)],
         }
 
     @property
     def node(self):
-        """ Returns the node dictionary """
+        """Returns the node dictionary."""
         return self._node_dict
 
     def get_position(self, state: int) -> Optional[np.ndarray]:
-        """ Given a state, return the node's xy position """
+        """Given a state, return the node's xy position."""
         if state in self._node_dict:
             return self._node_dict[state].position
 
         return None
 
     def get_state(self, pos) -> Optional[int]:
-        """ Given an xy position, return the nodes state id """
+        """Given an xy position, return the nodes state id."""
         for node in self._node_dict.values():
             if all(pos == node.position):
                 return node.state_id
@@ -77,14 +79,14 @@ class NodeGraph():
         return None
 
     def set_node_neighbors(self) -> None:
-        """ Set the neighbors for each node. """
+        """Set the neighbors for each node."""
         state = 0
-        for j in range(0, self._param["n_v"]):
-            for i in range(0, self._param["n_v"]):
+        for j in range(0, self._param['n_v']):
+            for i in range(0, self._param['n_v']):
                 # Craete temporary neighbor storage variable and fill
                 temp_neigh = []
 
-                if i + 1 < self._param["n_v"]:
+                if i + 1 < self._param['n_v']:
                     temp_neigh.append(np.array([i + 1, j]))
 
                 if j - 1 >= 0:
@@ -93,7 +95,7 @@ class NodeGraph():
                 if i - 1 >= 0:
                     temp_neigh.append(np.array([i - 1, j]))
 
-                if j + 1 < self._param["n_v"]:
+                if j + 1 < self._param['n_v']:
                     temp_neigh.append(np.array([i, j + 1]))
 
                 # Set neighbors for the specific node.
@@ -111,16 +113,16 @@ class NodeGraph():
 
         """
         state = 0
-        for j in range(0, self._param["n_v"]):
-            for i in range(0, self._param["n_v"]):
+        for j in range(0, self._param['n_v']):
+            for i in range(0, self._param['n_v']):
                 # Set position for the specific node.
                 self._node_dict[state].position = np.array(
                     [i, j], dtype=np.int8)
                 state += 1
 
     def set_node_jump_rates(self, beta: float) -> None:
-        """ Sets individual node jump rates (beta value) """
-        for i in range(0, self._param["total_states"]):
+        """Sets individual node jump rates (beta value)."""
+        for i in range(0, self._param['total_states']):
             self._node_dict[i].beta = beta
 
     def convert_action_to_node_info(self, old_state: int,
@@ -181,74 +183,74 @@ class NodeGraph():
         return (i, j, state_id, is_out_of_bounds)
 
     def action_left(self, old_state: int) -> Tuple[int, bool]:
-        """ Node position change and boundary bool for leader moving left """
-        if old_state % self._param["n_v"] != 0:
+        """Node position change and boundary bool for leader moving left."""
+        if old_state % self._param['n_v'] != 0:
             return (old_state - 1, False)
 
         return (old_state, True)
 
     def action_right(self, old_state: int) -> Tuple[int, bool]:
-        """ Node position change and boundary bool for leader moving right """
-        if (old_state  + 1) % self._param["n_v"] != 0:
+        """Node position change and boundary bool for leader moving right."""
+        if (old_state  + 1) % self._param['n_v'] != 0:
             return (old_state + 1, False)
 
         return (old_state, True)
 
     def action_up(self, old_state: int) -> Tuple[int, bool]:
-        """ Node position change and boundary bool for leader moving up """
-        if old_state < (self._param["n_v"] * (self._param["n_v"] - 1)):
-            return (old_state + self._param["n_v"], False)
+        """Node position change and boundary bool for leader moving up."""
+        if old_state < (self._param['n_v'] * (self._param['n_v'] - 1)):
+            return (old_state + self._param['n_v'], False)
 
         return (old_state, True)
 
     def action_down(self, old_state: int) -> Tuple[int, bool]:
-        """ Node position change and boundary bool for leader moving down """
-        if old_state > (self._param["n_v"] - 1):
-            return (old_state - self._param["n_v"], False)
+        """Node position change and boundary bool for leader moving down."""
+        if old_state > (self._param['n_v'] - 1):
+            return (old_state - self._param['n_v'], False)
 
         return (old_state, True)
 
     def action_stay(self, old_state: int) -> Tuple[int, bool]:
-        """ Node position change and boundary bool for leader staying """
+        """Node position change and boundary bool for leader staying."""
         return (old_state, True)
 
     def update_count(self) -> None:
-        """ Updates the agent count in each node/vertix """
-        for pos in self._param["all_positions"]:
+        """Updates the agent count in each node/vertix."""
+        for pos in self._param['all_positions']:
             state = self.get_state(pos)
-            mat_i, mat_j = to_matrix(self._param["n_v"], pos)
+            mat_i, mat_j = to_matrix(self._param['n_v'], pos)
             self._node_dict[state].agent_count = \
                 int(self.distribution.current[mat_i, mat_j] / \
-                    self._param["size_fraction"])
+                    self._param['size_fraction'])
 
     def reset(self) -> None:
-        """ Reset non-immutable values in all the Nodes """
+        """Reset non-immutable values in all the Nodes."""
         self.distribution.reset()
-        for i in range(0, np.power(self._param["n_v"], 2)):
+        for i in range(0, np.power(self._param['n_v'], 2)):
             self._node_dict[i].reset()
 
     def __iter__(self):
-        """ Iterator for nodes/vertices of the graph """
-        self._param["iter_count"] = -1
+        """Iterator for nodes/vertices of the graph."""
+        self._param['iter_count'] = -1
         return self
 
     def __next__(self):
-        """ Iterate through the nodes/vertices of the graph """
+        """Iterate through the nodes/vertices of the graph."""
         # - 1 because zero index
-        if self._param["iter_count"] < self._param["total_states"] - 1:
-            self._param["iter_count"] += 1
+        if self._param['iter_count'] < self._param['total_states'] - 1:
+            self._param['iter_count'] += 1
 
         else:
             raise StopIteration
 
-        return self._node_dict[self._param["iter_count"]]
+        return self._node_dict[self._param['iter_count']]
 
     def __repr__(self):
-        """ Returns offical representation of graph """
+        """Returns offical representation of graph."""
         graph_representation = np.zeros(
-            (self._param["n_v"], self._param["n_v"]), dtype=np.int8)
+            (self._param['n_v'], self._param['n_v']), dtype=np.int8)
         for node in self:
-            mat_i, mat_j = to_matrix(self._param["n_v"], node.position)
+            mat_i, mat_j = to_matrix(self._param['n_v'], node.position)
             graph_representation[mat_i, mat_j] = node.state_id
 
         return np.array2string(graph_representation)

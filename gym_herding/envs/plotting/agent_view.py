@@ -1,5 +1,5 @@
 """
-2D Rendering Framework for Herding Experiment
+2D Agent Rendering View for Herding Experiment.
 
 Written by: Zahi Kakish (zmk5)
 

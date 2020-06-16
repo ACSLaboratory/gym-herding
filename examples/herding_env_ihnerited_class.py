@@ -2,32 +2,35 @@
 Example Inherited Herding Environment
 """
 import numpy as np
+
 from gym_herding.envs.herding_env import HerdingEnv
 
 
 class HerdingEnvInheritanceExample(HerdingEnv):
     """
-    Something
+    HerdingEnvInheritanceExample Class.
     """
+
     def __init__(self, hep):
+        """Initialize the HerdingEnvInheritanceExample class."""
         super().__init__(hep)
 
     def step(self, action):
-        """ Executes the given action """
+        """Executes the given action."""
         # Get new leader state and position from action
         new_lx, new_ly, new_ls, is_out_of_bounds = \
             self.graph.convert_action_to_node_info(self.leader.state, action)
 
         # If action takes leader out of bounds, change info state to say that
         # occured.
-        self.var["is_out_of_bounds"] = is_out_of_bounds
+        self.var['is_out_of_bounds'] = is_out_of_bounds
 
         # Apply changes to leaders position and state onto the class
         self._move_leader(new_ls, new_lx, new_ly)
 
         # Apply repulsive effect of leader in new location on those local
         # herding agents.
-        if self.param.extra["leader_motion_moves_agents"]:
+        if self.param.extra['leader_motion_moves_agents']:
             self._move_herding_agents()
 
         # Apply repulsive effect of leader in new location on those local
@@ -40,7 +43,7 @@ class HerdingEnvInheritanceExample(HerdingEnv):
         obs = self._get_observation()
 
         # Get reward for action
-        if self.param.extra["leader_motion_moves_agents"]:
+        if self.param.extra['leader_motion_moves_agents']:
             reward = self._get_reward()
 
         else:
@@ -50,9 +53,9 @@ class HerdingEnvInheritanceExample(HerdingEnv):
 
         # Write info
         info = {
-            "is_out_of_bounds": self.var["is_out_of_bounds"],
-            "leader_state": self.leader.state,
-            "leader_pos": [new_lx, new_ly],
+            'is_out_of_bounds': self.var['is_out_of_bounds'],
+            'leader_state': self.leader.state,
+            'leader_pos': [new_lx, new_ly],
         }
 
         # Check for end of episode
@@ -65,23 +68,22 @@ class HerdingEnvInheritanceExample(HerdingEnv):
         return (obs, reward, done, info)
 
     def _get_reward_stay(self, action):
-        """ Reward Test Cases """
+        """Reward the test cases."""
         if action == 4:
             return -1 * np.sum(np.power(
                 self.graph.distribution.current - \
                     self.graph.distribution.target, 2))
 
-        # return -1
         return -1 * np.sum(np.power(
             self.graph.distribution.current - \
                 self.graph.distribution.target, 2))
 
     def _get_reward(self):
-        """ Reward Test Cases """
+        """Reward the test cases."""
         return -1 * np.sum(np.power(
             self.graph.distribution.current - \
                 self.graph.distribution.target, 2))
 
     def _get_observation(self):
-        """ Get the calculated observation of environment state """
+        """Get the calculated observation of environment state."""
         return self.graph.distribution.current

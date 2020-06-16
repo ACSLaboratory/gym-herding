@@ -17,7 +17,7 @@ import numpy as np
 
 class Node():
     """
-    Node on a Graph
+    Node on a Graph.
 
     Parameters
     ----------
@@ -35,16 +35,18 @@ class Node():
 
 
     """
+
     def __init__(self, node_id: int, pos_x: int, pos_y: int,
                  max_neighbors: int = 4) -> None:
+        """Initialize the Node class."""
         self._node_id = node_id
         self._position = np.array([pos_x, pos_y], dtype=np.int8)
         self._neighbors = 0
         self._param = {
-            "agent_count": 0,
-            "init_pos_x": pos_x,
-            "init_pos_y": pos_y,
-            "jump_weight": 0.1,
+            'agent_count': 0,
+            'init_pos_x': pos_x,
+            'init_pos_y': pos_y,
+            'jump_weight': 0.1,
         }
         self.num_of_neighbors = 0
         self.max_neighbors = max_neighbors
@@ -52,43 +54,43 @@ class Node():
 
     @property
     def beta(self) -> float:
-        """ Beta value getter (Jumping Weight) """
-        return self._param["jump_weight"]
+        """Beta value getter (Jumping Weight)."""
+        return self._param['jump_weight']
 
     @beta.setter
     def beta(self, new_beta: float) -> None:
-        """ Beta value setter (Jumping Weight) """
-        self._param["jump_weight"] = new_beta
+        """Beta value setter (Jumping Weight)."""
+        self._param['jump_weight'] = new_beta
 
     @property
     def state_id(self) -> int:
-        """ State ID getter property """
+        """State ID getter property."""
         return self._node_id
 
     @state_id.setter
     def state_id(self, node_id: int) -> None:
-        """ State ID setter property """
+        """State ID setter property."""
         self._node_id = node_id
 
     @property
     def agent_count(self) -> int:
-        """ Agent count getter property """
-        return self._param["agent_count"]
+        """Agent count getter property."""
+        return self._param['agent_count']
 
     @agent_count.setter
     def agent_count(self, val: int) -> None:
-        """ Agent count setter property """
-        self._param["agent_count"] = val
+        """Agent count setter property."""
+        self._param['agent_count'] = val
 
     @property
     def position(self) -> np.ndarray:
-        """ Position getter property """
+        """Position getter property."""
         return self._position
 
     @position.setter
     def position(self,
                  pos_xy: Union[np.ndarray, Dict[int, int], List[int]]) -> None:
-        """ Position setter property """
+        """Position setter property."""
         if isinstance(pos_xy, np.ndarray):
             self._position = pos_xy
 
@@ -97,12 +99,12 @@ class Node():
 
     @property
     def neighbors(self) -> np.ndarray:
-        """ Neighbors getter property """
+        """Neighbors getter property."""
         return self._neighbors
 
     @neighbors.setter
     def neighbors(self, neighbors: np.ndarray) -> None:
-        """ Neighbors setter property """
+        """Neighbors setter property."""
         if isinstance(neighbors, np.ndarray):
             if (neighbors.shape[0] <= self.max_neighbors and
                     neighbors.shape[1] <= 2):
@@ -110,21 +112,21 @@ class Node():
 
             else:
                 raise IndexError(
-                    "Neighbors should be a (%d x 2) numpy.ndarray." \
+                    'Neighbors should be a (%d x 2) numpy.ndarray.' \
                     % self.max_neighbors)
 
         else:
-            raise IndexError("Neighbors should be a (%d x 2) numpy.ndarray." \
+            raise IndexError('Neighbors should be a (%d x 2) numpy.ndarray.' \
                              % self.max_neighbors)
 
     def set_param(self, key: str, val: Any, new: bool = False) -> None:
-        """ something """
+        """Set a new class attribute."""
         if new or key in self._param:
             self._param[key] = val
 
         else:
-            raise KeyError(str(key) + " is not a valid parameter.")
+            raise KeyError(str(key) + ' is not a valid parameter.')
 
     def reset(self) -> None:
-        """ Reset non-immutable values of Node """
-        self._param["agent_count"] = 0
+        """Reset non-immutable values of Node."""
+        self._param['agent_count'] = 0
