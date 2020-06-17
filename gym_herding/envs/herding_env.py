@@ -45,12 +45,14 @@ class HerdingEnv(Env):
         """Initialize the HerdingEnv Class."""
         # Set immutable params and mutable variables, if applicable.
         self.param = hep
+        self.graph: NodeGraph = None
+        self.leader: Leader = None
         self.var = {
             'is_out_of_bounds': False,
         }
 
         if self.param is None:
-            print('Please provide environment parameters in the ' + \
+            print('Please provide environment parameters in the ' +
                   'HerdingEnvParamters object\nbefore continuing!')
 
         else:
@@ -64,7 +66,7 @@ class HerdingEnv(Env):
     def initialize(self,
                    hep: HerdingEnvParameters,
                    observation_space: int = 3) -> None:
-        """Initializes the OpenAI Environment."""
+        """Initialize the OpenAI Environment."""
         # Set immutable params
         self.param = hep
 
@@ -75,53 +77,20 @@ class HerdingEnv(Env):
         else:
             self._plot = HerdingEnvPlottingBar(self.param.n_v, self.param.n_p)
 
-        # Instantiate Graph, Agents, and Leader object.
-        self.graph = NodeGraph(
-            self.param.n_v, self.param.n_p, self.param.weights)
-        self.leader = Leader(
-            self.param.extra['init_leader_state'], self.param.n_v,
-            self.param.extra['init_leader_pos'][0],
-            self.param.extra['init_leader_pos'][1])
-
-        # Set Node Jump Weight (Beta)
-        self.graph.set_node_jump_rates(self.param.extra['jump_weight'])
-
         # Initialize Graph, Agent, and Leader values.
-        self._initialize_env_objects()
+        self._initialize_graph()
 
-        ## Observation Space
-        # Testing with multiple observation spaces
-        #     Test 1: Dist in the current node (1)
-        #     Test 2: Dist in left, right, up, down, and current node (5)
-        #     Test 3: The whole state-space (n_v^2)
-        if observation_space == 1:
-            self.observation_space = Box(
-                low=0, high=1, shape=(1,), dtype=np.float32)
+        # Observation Space
+        self._initialize_observation(observation_space)
 
-        elif observation_space == 2:
-            self.observation_space = Box(
-                low=0, high=1, shape=(5,), dtype=np.float32)
-
-        elif observation_space == 3:
-            self.observation_space = Box(
-                low=0, high=1, shape=(self.param.n_v, self.param.n_v),
-                dtype=np.float32)
-
-        ## Action Space
-        # Should be only possible path actions that the agent can go through,
-        # and in this case it is either:
-        #     0 - Left
-        #     1 - Right
-        #     2 - Up
-        #     3 - Down
-        #     4 - Stay
-        self.action_space = Discrete(5)
+        # Action Space
+        self._initialize_actions()
 
         # Initialize rendering environment (matplotlib)
         self._plot.create_figure()
 
     def step(self, action: int) -> Tuple[np.ndarray, int, bool, dict]:
-        """Executes the given action."""
+        """Execute the given action."""
         # Get new leader state and position from action
         new_lx, new_ly, new_ls, is_out_of_bounds = \
             self.graph.convert_action_to_node_info(self.leader.state, action)
@@ -149,7 +118,6 @@ class HerdingEnv(Env):
 
         # Get reward for action
         reward = self._get_reward()
-        done = False
 
         # Write info
         info = {
@@ -164,6 +132,7 @@ class HerdingEnv(Env):
 
         else:
             self.param.iter += 1
+            done = False
 
         return (obs, reward, done, info)
 
@@ -179,7 +148,7 @@ class HerdingEnv(Env):
         return self.graph.distribution.current
 
     def render(self, mode: str = 'human') -> None:
-        """Displays the environment."""
+        """Display the environment."""
         self._plot.render(self.graph, self.leader)
 
     def save_render(self, file_name: str) -> None:
@@ -191,13 +160,13 @@ class HerdingEnv(Env):
         raise NotImplementedError()
 
     def is_action_valid(self, action: int) -> bool:
-        """Checks if the leader agent action is valid."""
+        """Check if the leader agent action is valid."""
         if action == 0:  # Left
             if self.leader.state % self.param.n_v != 0:
                 return True
 
         elif action == 1:  # Right
-            if (self.leader.state  + 1) % self.param.n_v != 0:
+            if (self.leader.state + 1) % self.param.n_v != 0:
                 return True
 
         elif action == 2:  # Up
@@ -233,7 +202,7 @@ class HerdingEnv(Env):
         raise NotImplementedError()
 
     def _move_herding_agents(self) -> None:
-        """Moves the herding agents within the environment."""
+        """Move the herding agents within the environment."""
         # Get number of agents within the node that the leader is in
         chk_ld = self.graph.node[self.leader.state].agent_count
         beta = self.graph.node[self.leader.state].beta  # Jump Weight
@@ -274,7 +243,58 @@ class HerdingEnv(Env):
                 jump_count, new_x, new_y, 'current')
 
     def _move_leader(self, new_ls: int, new_lx: int, new_ly: int) -> None:
-        """Moves the leader to the next position."""
+        """Move the leader to the next position."""
         self.leader.state = new_ls
         self.leader.real = np.array([new_lx, new_ly], dtype=np.int8)
         self.leader.visual = np.array([new_lx, new_ly], dtype=np.int8)
+
+    def _initialize_graph(self):
+        """Instantiate Graph, Agents, and Leader object."""
+        self.graph = NodeGraph(
+            self.param.n_v, self.param.n_p, self.param.weights)
+        self.leader = Leader(
+            self.param.extra['init_leader_state'], self.param.n_v,
+            self.param.extra['init_leader_pos'][0],
+            self.param.extra['init_leader_pos'][1])
+
+        # Set Node Jump Weight (Beta)
+        self.graph.set_node_jump_rates(self.param.extra['jump_weight'])
+
+        self.graph.distribution.target = self.param.dist['target']
+        self.graph.distribution.initial = self.param.dist['initial']
+        for dist in ['initial', 'current', 'target']:
+            self.graph.distribution.apply_population(dist)
+
+        self.graph.set_node_positions()
+        self.graph.set_node_neighbors()
+        self.graph.update_count()
+
+    def _initialize_observation(self, observation_space: int):
+        """Initialize the observation space."""
+        # Testing with multiple observation spaces
+        #     Test 1: Dist in the current node (1)
+        #     Test 2: Dist in left, right, up, down, and current node (5)
+        #     Test 3: The whole state-space (n_v^2)
+        if observation_space == 1:
+            self.observation_space = Box(
+                low=0, high=1, shape=(1,), dtype=np.float32)
+
+        elif observation_space == 2:
+            self.observation_space = Box(
+                low=0, high=1, shape=(5,), dtype=np.float32)
+
+        elif observation_space == 3:
+            self.observation_space = Box(
+                low=0, high=1, shape=(self.param.n_v, self.param.n_v),
+                dtype=np.float32)
+
+    def _initialize_actions(self):
+        """Initialize the action space."""
+        # Should be only possible path actions that the agent can go through,
+        # and in this case it is either:
+        #     0 - Left
+        #     1 - Right
+        #     2 - Up
+        #     3 - Down
+        #     4 - Stay
+        self.action_space = Discrete(5)

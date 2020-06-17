@@ -37,8 +37,18 @@ def main():
     # Initialize the environment with your new parameters.
     env.Initialize(hep)
 
+    # Set observation and reward
+    env._get_observation = lambda: env.graph.distribution.current
+    env._get_reward = lambda: -1
+
     while not done:
+        # Generate action
         action = np.random.randint(0, 5)
+
+        # Render the environment
+        env.render()
+
+        # Increment one step
         obs, reward, done, info = env.step(action)
 
 
