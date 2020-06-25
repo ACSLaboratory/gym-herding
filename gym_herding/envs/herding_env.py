@@ -91,6 +91,9 @@ class HerdingEnv(Env):
 
             # Initialize rendering environment (matplotlib)
             self._plot.create_figure()
+        
+        else:
+            print('[WARN] Rendering has been disabled for this environment!')
 
     def step(self, action: int) -> Tuple[np.ndarray, int, bool, dict]:
         """Execute the given action."""
@@ -155,16 +158,10 @@ class HerdingEnv(Env):
         if self.param.extra['rendering_enabled']:
             self._plot.render(self.graph, self.leader)
 
-        else:
-            print('Rendering was disabled for this environment!')
-
     def save_render(self, file_name: str) -> None:
         """Save image of the render."""
         if self.param.extra['rendering_enabled']:
             self._plot.save_render(file_name)
-
-        else:
-            print('Rendering was disabled for this environment!')
 
     def close(self) -> NoReturn:
         """Close the environment."""
