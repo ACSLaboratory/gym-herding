@@ -70,6 +70,15 @@ class HerdingEnv(Env):
         # Set immutable params
         self.param = hep
 
+        # Initialize Graph, Agent, and Leader values.
+        self._initialize_graph()
+
+        # Observation Space
+        self._initialize_observation(observation_space)
+
+        # Action Space
+        self._initialize_actions()
+
         # Set plotting class
         if self.param.extra['rendering_enabled']:
             if self.param.extra['visualization'] == 'graph':
@@ -80,17 +89,8 @@ class HerdingEnv(Env):
                 self._plot = HerdingEnvPlottingBar(
                     self.param.n_v, self.param.n_p)
 
-        # Initialize Graph, Agent, and Leader values.
-        self._initialize_graph()
-
-        # Observation Space
-        self._initialize_observation(observation_space)
-
-        # Action Space
-        self._initialize_actions()
-
-        # Initialize rendering environment (matplotlib)
-        self._plot.create_figure()
+            # Initialize rendering environment (matplotlib)
+            self._plot.create_figure()
 
     def step(self, action: int) -> Tuple[np.ndarray, int, bool, dict]:
         """Execute the given action."""
