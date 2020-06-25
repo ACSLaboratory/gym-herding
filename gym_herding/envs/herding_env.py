@@ -71,11 +71,14 @@ class HerdingEnv(Env):
         self.param = hep
 
         # Set plotting class
-        if self.param.extra['visualization'] == 'graph':
-            self._plot = HerdingEnvPlotting(self.param.n_v, self.param.n_p)
+        if self.param.extra['rendering_enabled']:
+            if self.param.extra['visualization'] == 'graph':
+                self._plot = HerdingEnvPlotting(
+                    self.param.n_v, self.param.n_p)
 
-        else:
-            self._plot = HerdingEnvPlottingBar(self.param.n_v, self.param.n_p)
+            else:
+                self._plot = HerdingEnvPlottingBar(
+                    self.param.n_v, self.param.n_p)
 
         # Initialize Graph, Agent, and Leader values.
         self._initialize_graph()
@@ -149,11 +152,19 @@ class HerdingEnv(Env):
 
     def render(self, mode: str = 'human') -> None:
         """Display the environment."""
-        self._plot.render(self.graph, self.leader)
+        if self.param.extra['rendering_enabled']:
+            self._plot.render(self.graph, self.leader)
+
+        else:
+            print('Rendering was disabled for this environment!')
 
     def save_render(self, file_name: str) -> None:
         """Save image of the render."""
-        self._plot.save_render(file_name)
+        if self.param.extra['rendering_enabled']:
+            self._plot.save_render(file_name)
+
+        else:
+            print('Rendering was disabled for this environment!')
 
     def close(self) -> NoReturn:
         """Close the environment."""

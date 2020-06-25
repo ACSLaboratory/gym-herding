@@ -63,6 +63,7 @@ class HerdingEnvParameters():
             'jump_weight': beta,
             'leader_motion_moves_agents': False,
             'visualization': visualization,
+            'rendering_enabled': True,
         }
 
     @property
