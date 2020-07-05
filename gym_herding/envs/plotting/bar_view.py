@@ -132,12 +132,7 @@ class HerdingEnvPlottingBar():
         self.fig.savefig(file_name)
 
     def _init(self) -> List[PlotType]:
-        """Initial plotting of leader and agents."""
+        """Initialize plotting of leader and agents."""
         self.plots[0].set_data([], [], 'bx', markersize=5)
         self.plots[1].set_data([], [], 'r.', markersize=15)
         return self.plots
-
-    def _get_visual_position(self, point: int) -> float:
-        """Get x or y coordinate for visualization."""
-        return point / self._param['n_v'] + np.random.uniform() / \
-            self._param['n_v']

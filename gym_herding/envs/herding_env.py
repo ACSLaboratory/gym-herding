@@ -91,7 +91,7 @@ class HerdingEnv(Env):
 
             # Initialize rendering environment (matplotlib)
             self._plot.create_figure()
-        
+
         else:
             print('[WARN] Rendering has been disabled for this environment!')
 
@@ -191,7 +191,7 @@ class HerdingEnv(Env):
         return False
 
     def _initialize_env_objects(self) -> None:
-        """Initialize environment object values."""
+        """Initialize environment object values. (DEPRECATED)"""
         self.graph.distribution.target = self.param.dist['target']
         self.graph.distribution.initial = self.param.dist['initial']
         for dist in ['initial', 'current', 'target']:
@@ -273,7 +273,7 @@ class HerdingEnv(Env):
         for dist in ['initial', 'current', 'target']:
             self.graph.distribution.apply_population(dist)
 
-        self.graph.set_node_positions()
+        # self.graph.set_node_positions()
         self.graph.set_node_neighbors()
         self.graph.update_count()
 

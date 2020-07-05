@@ -32,6 +32,7 @@ class HerdingEnvPlotting():
         The population of agents to herd.
 
     """
+
     def __init__(self, n_v: int, n_p: int) -> None:
         self.fig = None
         self.axis = None
@@ -39,36 +40,49 @@ class HerdingEnvPlotting():
         self._param = {
             "n_v": n_v,
             "n_p": n_p,
+            "offset": 0.5,
         }
+        self._agents_x: np.ndarray = np.empty(n_p)
+        self._agents_y: np.ndarray = np.empty(n_p)
 
     def create_figure(self) -> None:
-        """ Create figure for rendering """
+        """Create figure for rendering."""
         plt.ion()
         self.fig = plt.figure(1)
-        self.axis = self.fig.add_subplot(111, xlim=(0, 1), ylim=(0, 1))
+        self.axis = self.fig.add_subplot(
+            111, xlim=(0, self._param["n_v"]), ylim=(0, self._param["n_v"]))
         self.axis.grid(True)
-        plt.xticks(np.linspace(0, 1, self._param["n_v"] + 1))
-        plt.yticks(np.linspace(0, 1, self._param["n_v"] + 1))
+        plt.xticks(np.linspace(0, self._param["n_v"], self._param["n_v"] + 1))
+        plt.yticks(np.linspace(0, self._param["n_v"], self._param["n_v"] + 1))
         a_plt, = self.axis.plot([], [], 'bx', markersize=5)
         l_plt, = self.axis.plot([], [], 'r.', markersize=15)
         self.plots = [a_plt, l_plt]
 
-    def render(self, graph: NodeGraph, leader: Leader,
-               is_initial: bool = False) -> None:
-        """ Render the motion of the leader and agents on the plot """
+    def render(
+            self,
+            graph: NodeGraph,
+            leader: Leader,
+            is_initial: bool = False) -> None:
+        """Render the motion of the leader and agents on the plot."""
         def animate(i):
-            """ Animation procedure for Fraction option """
-            plot_viz_x = []
-            plot_viz_y = []
+            """Animate procedure for Fraction option."""
+            idx = 0
             for node in graph:
-                node_x, node_y = node.position
+                node_i, node_j = node.position
                 agent_count = node.agent_count
 
-                for _ in range(0, agent_count):
-                    plot_viz_x.append(self._get_visual_position(node_x))
-                    plot_viz_y.append(self._get_visual_position(node_y))
+                # Convert matrix coor (i, j) to cartesian coor (x, y)
+                node_x = node_j + self._param['offset']
+                node_y = (self._param['n_v'] - node_i) - self._param['offset']
 
-            self.plots[0].set_data(plot_viz_x, plot_viz_y)
+                self._agents_x[idx:idx + agent_count] = self._get_visual_position(
+                    node_x, agent_count)
+                self._agents_y[idx:idx + agent_count] = self._get_visual_position(
+                    node_y, agent_count)
+
+                idx += agent_count
+
+            self.plots[0].set_data(self._agents_x, self._agents_y)
             self.plots[1].set_data(leader.visual[0], leader.visual[1])
             return self.plots
 
@@ -87,20 +101,20 @@ class HerdingEnvPlotting():
         self.fig.canvas.flush_events()
 
     def reset(self) -> None:
-        """ Reset certain mutable class properties """
+        """Reset certain mutable class properties."""
         raise NotImplementedError
 
     def save_render(self, file_name: str) -> None:
-        """ Save image of the render """
+        """Save image of the render."""
         self.fig.savefig(file_name)
 
     def _init(self) -> List[PlotType]:
-        """ Initial plotting of leader and agents """
+        """Initialize plotting of leader and agents."""
         self.plots[0].set_data([], [], 'bx', markersize=5)
         self.plots[1].set_data([], [], 'r.', markersize=15)
         return self.plots
 
-    def _get_visual_position(self, point: int) -> float:
-        """ Get x or y coordinate for visualization """
-        return point / self._param["n_v"] + np.random.uniform() / \
-            self._param["n_v"]
+    def _get_visual_position(self, point: int, pop_size: int) -> float:
+        """Get x or y coordinate for visualization."""
+        return point + np.random.uniform(
+            -1 * self._param['offset'], self._param['offset'], size=pop_size)

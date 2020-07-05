@@ -82,13 +82,13 @@ class Distribution():
                 self._status['initial'] = True
 
             else:
-                raise ValueError('Must provide initial distribution ' + \
-                                 'of agents. A matrix with values between' + \
-                                 ' 0 and 1.')
+                raise ValueError(
+                    'Must provide initial distribution of agents. A matrix' +
+                    ' with values between 0 and 1.')
 
         else:
-            raise ValueError('Target distribution matrix should only ' + \
-                             'contain 1 or 0 values.')
+            raise ValueError(
+                'Target distribution matrix should only contain 1 or 0 values.')
 
     @property
     def current(self) -> np.ndarray:
@@ -114,9 +114,9 @@ class Distribution():
         if self._status['target']:
             raise ValueError('Target Distribution already set.')
 
-        elif (isinstance(matrix, np.ndarray) and
-              matrix.shape[0] == self._param['n_v'] and
-              matrix.shape[1] == self._param['n_v']):
+        if (isinstance(matrix, np.ndarray) and
+                matrix.shape[0] == self._param['n_v'] and
+                matrix.shape[1] == self._param['n_v']):
 
             if matrix.dtype != np.float32:
                 raise TypeError('Target must be a np.float32 np.ndarray.')
@@ -132,8 +132,9 @@ class Distribution():
                         dist_info_1 += 1
 
                     else:
-                        raise ValueError('Target distribution matrix should' + \
-                                         ' only contain 1 or 0 values.')
+                        raise ValueError(
+                            'Target distribution matrix should' +
+                            ' only contain 1 or 0 values.')
 
             # Assign info
             self._dist['target'] = matrix
@@ -142,8 +143,8 @@ class Distribution():
             self._status['target'] = True
 
         else:
-            raise ValueError('Target distribution matrix should only ' + \
-                             'contain 1 or 0 values.')
+            raise ValueError(
+                'Target distribution matrix should only contain 1 or 0 values.')
 
     @property
     def difference(self) -> np.ndarray:
@@ -158,17 +159,20 @@ class Distribution():
         The i,j coordinates must be in plotting form. The parameters will
         be transformed to matrix form for look-up in the distribuiton attribute.
 
+        # TODO: Update docs to reflect matrix reform
+        # TODO: May need to remove this or move to Node class.
         """
         if key not in self._dist:
-            raise KeyError('key parameter must be a valid distribution: ' +
-                           '[\'initial\', \'current\', \'target\']')
+            raise KeyError(
+                'key parameter must be a valid distribution: ' +
+                '[\'initial\', \'current\', \'target\']')
 
-        elif not self._status['target'] or not self._status['initial']:
+        if not self._status['target'] or not self._status['initial']:
             raise ValueError(
                 'No initial or target distribution has been defined.')
 
-        mat_i, mat_j = to_matrix(self._param['n_v'], np.array([i, j]))
-        return self._dist[key][mat_i, mat_j]
+        # mat_i, mat_j = to_matrix(self._param['n_v'], np.array([i, j]))
+        return self._dist[key][i, j]
 
     def set_node_value(self, val, i: int, j: int, key: str = 'target') -> None:
         """
@@ -177,17 +181,20 @@ class Distribution():
         The i,j coordinates must be in plotting form. The parameters will
         be transformed to matrix form for look-up in the distribuiton attribute.
 
+        # TODO: Update docs to reflect matrix reform
+        # TODO: May need to remove this or move to Node class.
         """
         if key not in self._dist:
-            raise KeyError('key parameter must be a valid distribution: ' +
-                           '[\'initial\', \'current\', \'target\']')
+            raise KeyError(
+                'key parameter must be a valid distribution: ' +
+                '[\'initial\', \'current\', \'target\']')
 
-        elif not self._status['target'] or not self._status['initial']:
+        if not self._status['target'] or not self._status['initial']:
             raise ValueError(
                 'No initial or target distribution has been defined.')
 
-        mat_i, mat_j = to_matrix(self._param['n_v'], np.array([i, j]))
-        self._dist[key][mat_i, mat_j] = val
+        # mat_i, mat_j = to_matrix(self._param['n_v'], np.array([i, j]))
+        self._dist[key][i, j] = val
 
     def increment_node_value(self, val: Union[int, float], i: int, j: int,
                              key: str = 'target') -> None:
@@ -198,25 +205,28 @@ class Distribution():
         be transformed to matrix form for look-up in the distribuiton
         attribute.
 
+        # TODO: Update docs to reflect matrix reform
         """
         if key not in self._dist:
-            raise KeyError('key parameter must be a valid distribution: ' +
-                           '[\'initial\', \'current\', \'target\']')
+            raise KeyError(
+                'key parameter must be a valid distribution: ' +
+                '[\'initial\', \'current\', \'target\']')
 
-        elif not self._status['target'] or not self._status['initial']:
+        if not self._status['target'] or not self._status['initial']:
             raise ValueError(
                 'No initial or target distribution has been defined.')
 
-        mat_i, mat_j = to_matrix(self._param['n_v'], np.array([i, j]))
-        self._dist[key][mat_i, mat_j] += val * self._param['size_fraction']
+        # mat_i, mat_j = to_matrix(self._param['n_v'], np.array([i, j]))
+        self._dist[key][i, j] += val * self._param['size_fraction']
 
     def apply_population(self, key: str = 'target') -> None:
         """Apply population to distribution."""
         if key not in self._dist:
-            raise KeyError('key parameter must be a valid distribution: ' +
-                           '[\'initial\', \'current\', \'target\']')
+            raise KeyError(
+                'key parameter must be a valid distribution: ' +
+                '[\'initial\', \'current\', \'target\']')
 
-        elif not self._status['target'] or not self._status['initial']:
+        if not self._status['target'] or not self._status['initial']:
             raise ValueError(
                 'No initial or target distribution has been defined.')
 

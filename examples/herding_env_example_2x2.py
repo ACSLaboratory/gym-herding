@@ -35,7 +35,7 @@ def main():
     hep.extra['leader_motion_moves_agents'] = False
 
     # Initialize the environment with your new parameters.
-    env.Initialize(hep)
+    env.initialize(hep)
 
     # Set observation and reward
     env._get_observation = lambda: env.graph.distribution.current

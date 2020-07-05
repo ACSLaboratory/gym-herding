@@ -15,18 +15,26 @@ class Leader():
     Leader class for Graph.
     """
 
-    def __init__(self, initial_state: int, n_v: int, pos_x: int,
-                 pos_y: int) -> None:
+    def __init__(self, initial_state: int, n_v: int, x: int, y: int) -> None:
         """Initialize the Leader class."""
         self._param = {
             'n_v': n_v,
-            'x': pos_x,  # initial x
-            'y': pos_y,  # initial y
+            'x': x,  # initial x
+            'y': y,  # initial y
             'initial_state': initial_state,
         }
-        self._real_position = np.array([pos_x, pos_y], dtype=np.int8)
-        self._visual_position = np.array([pos_x / n_v + 1 / (n_v * 2),
-                                          pos_y / n_v + 1 / (n_v * 2)])
+        self._real_position = np.array([x, y], dtype=np.int8)
+
+        # Visual position converts matrix coordinates to cartesian coordinates
+        # if (i, j) are the matrix indexes, then the cartesian coordinates are:
+        #
+        #     x = j + offset
+        #     y = (n_v - i) - offset
+        self.offset: float = 0.5
+        self._visual_position = np.array(
+            [y + self.offset,  # x in cartesian space
+             (n_v - x) - self.offset])  # y in cartesian space
+
         self.path = {
             'path': np.arange(np.power(n_v, 2)),
             'index': 0,
@@ -66,8 +74,8 @@ class Leader():
         """Visual Position setter property."""
         if isinstance(pos, np.ndarray):
             self._visual_position = np.array(
-                [pos[0] / self._param['n_v'] + 1 / (self._param['n_v'] * 2),
-                 pos[1] / self._param['n_v'] + 1 / (self._param['n_v'] * 2)])
+                [pos[1] + self.offset,
+                 (self._param['n_v'] - pos[0]) - self.offset])
 
         else:
             raise TypeError('Position parameter must be a np.ndarray.')
@@ -107,10 +115,8 @@ class Leader():
         self._real_position = np.array(
             [self._param['x'], self._param['y']], dtype=np.int8)
         self._visual_position = np.array(
-            [self._param['x'] / self._param['n_v'] + 1 / \
-             (self._param['n_v'] * 2),
-             self._param['y'] / self._param['n_v'] + 1 / \
-             (self._param['n_v'] * 2)])
+            [self._param['y'] + self.offset,
+             (self._param['n_v'] - self._param['x']) - self.offset])
         self.path['path'] = np.arange(np.power(self._param['n_v'], 2))
         self.path['index'] = 0
         self.path['size'] = 0

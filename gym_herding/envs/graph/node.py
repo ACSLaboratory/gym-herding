@@ -112,12 +112,13 @@ class Node():
 
             else:
                 raise IndexError(
-                    'Neighbors should be a (%d x 2) numpy.ndarray.' \
-                    % self.max_neighbors)
+                    f'Neighbors should be a ({self.max_neighbors} x 2)' +
+                    ' numpy.ndarray.')
 
         else:
-            raise IndexError('Neighbors should be a (%d x 2) numpy.ndarray.' \
-                             % self.max_neighbors)
+            raise IndexError(
+                f'Neighbors should be a ({self.max_neighbors} x 2)' +
+                'numpy.ndarray.')
 
     def set_param(self, key: str, val: Any, new: bool = False) -> None:
         """Set a new class attribute."""
@@ -125,7 +126,7 @@ class Node():
             self._param[key] = val
 
         else:
-            raise KeyError(str(key) + ' is not a valid parameter.')
+            raise KeyError(f'{str(key)} is not a valid parameter.')
 
     def reset(self) -> None:
         """Reset non-immutable values of Node."""

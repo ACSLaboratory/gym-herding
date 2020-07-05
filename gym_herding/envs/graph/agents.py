@@ -1,5 +1,5 @@
 """
-Agents Class.
+Agents Class (DEPRECATED)
 
 Written by: Zahi Kakish (zmk5)
 
@@ -35,6 +35,10 @@ class Agents():
     def __init__(self, n_v: int, n_p: int, weights: List[float],
                  agent_type: str = 'individual') -> None:
         """Initialize the Agents class."""
+
+        print('[WARN] DEPRECATION: Use of the Agent class is not advised. ' +
+              'Please use the Distribution class instead.')
+
         # Immutable parameter variables
         self._param = {
             'n_v': n_v,

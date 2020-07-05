@@ -4,7 +4,7 @@ Setup for the Herding Environment
 from setuptools import setup
 
 setup(name='gym_herding',
-      version='0.1.1',
+      version='0.2.0',
       description='Leader-agent herding OpenAI gym environment',
       url='https://github.com/acslaboratory/gym-herding',
       author='Zahi Kakish',

@@ -43,9 +43,12 @@ class NodeGraph():
         self._node_dict: Dict[int, Node] = {}
         self.distribution = Distribution(n_v, n_p, weights)
 
-        # Instantiate n_v^2 number of nodes
-        for i in range(0, np.power(n_v, 2)):
-            self._node_dict[i] = Node(i, 0, 0)
+        # Instantiate n_v^2 number of nodes and thier initial positions
+        state_id = 0
+        for i in range(0, n_v):
+            for j in range(0, n_v):
+                self._node_dict[state_id] = Node(state_id, i, j)
+                state_id += 1
 
         # Immutable parameter variables
         self._param = {
@@ -81,8 +84,8 @@ class NodeGraph():
     def set_node_neighbors(self) -> None:
         """Set the neighbors for each node."""
         state = 0
-        for j in range(0, self._param['n_v']):
-            for i in range(0, self._param['n_v']):
+        for i in range(0, self._param['n_v']):
+            for j in range(0, self._param['n_v']):
                 # Craete temporary neighbor storage variable and fill
                 temp_neigh = []
 
@@ -111,10 +114,11 @@ class NodeGraph():
         of a cartesian xy-plot. To convert to an ij-position scheme, use
         the `to_matrix()` function in the `position.py` file.
 
+        TODO: Update docs bc now we keep Matrix form.
         """
         state = 0
-        for j in range(0, self._param['n_v']):
-            for i in range(0, self._param['n_v']):
+        for i in range(0, self._param['n_v']):
+            for j in range(0, self._param['n_v']):
                 # Set position for the specific node.
                 self._node_dict[state].position = np.array(
                     [i, j], dtype=np.int8)
@@ -125,8 +129,10 @@ class NodeGraph():
         for i in range(0, self._param['total_states']):
             self._node_dict[i].beta = beta
 
-    def convert_action_to_node_info(self, old_state: int,
-                                    action: int) -> Tuple[int, int, int, bool]:
+    def convert_action_to_node_info(
+            self,
+            old_state: int,
+            action: int) -> Tuple[int, int, int, bool]:
         """
         Converts a leader movement action to Graph properties.
 
@@ -160,8 +166,8 @@ class NodeGraph():
 
         """
         # Get new state from action
-        state_id = None
-        is_out_of_bounds = False
+        state_id: bool = None
+        is_out_of_bounds: bool = False
         if action == 0:  # Left
             state_id, is_out_of_bounds = self.action_left(old_state)
 
@@ -198,15 +204,15 @@ class NodeGraph():
 
     def action_up(self, old_state: int) -> Tuple[int, bool]:
         """Node position change and boundary bool for leader moving up."""
-        if old_state < (self._param['n_v'] * (self._param['n_v'] - 1)):
-            return (old_state + self._param['n_v'], False)
+        if old_state > (self._param['n_v'] - 1):
+            return (old_state - self._param['n_v'], False)
 
         return (old_state, True)
 
     def action_down(self, old_state: int) -> Tuple[int, bool]:
         """Node position change and boundary bool for leader moving down."""
-        if old_state > (self._param['n_v'] - 1):
-            return (old_state - self._param['n_v'], False)
+        if old_state < (self._param['n_v'] - 1):
+            return (old_state + self._param['n_v'], False)
 
         return (old_state, True)
 
