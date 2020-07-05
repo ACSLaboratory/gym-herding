@@ -52,10 +52,13 @@ class HerdingEnvPlottingBar():
         self.fig = plt.figure(1)
 
         # Create subplot showing leader motion
-        self.axis[0] = self.fig.add_subplot(121, xlim=(0, 1), ylim=(0, 1))
+        self.axis[0] = self.fig.add_subplot(
+            121, xlim=(0, self._param["n_v"]), ylim=(0, self._param["n_v"]))
         self.axis[0].grid(True)
-        self.axis[0].set_xticks(np.linspace(0, 1, self._param['n_v'] + 1))
-        self.axis[0].set_yticks(np.linspace(0, 1, self._param['n_v'] + 1))
+        self.axis[0].set_xticks(
+            np.linspace(0, self._param["n_v"], self._param['n_v'] + 1))
+        self.axis[0].set_yticks(
+            np.linspace(0, self._param["n_v"], self._param['n_v'] + 1))
         l_plt, = self.axis[0].plot([], [], 'r.', markersize=15)
 
         # Create subplot for showing agent density

@@ -34,6 +34,7 @@ class HerdingEnvPlotting():
     """
 
     def __init__(self, n_v: int, n_p: int) -> None:
+        """Initialize the HerdingEnvPlotting class."""
         self.fig = None
         self.axis = None
         self.plots = None
