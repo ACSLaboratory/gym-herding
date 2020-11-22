@@ -204,14 +204,14 @@ class NodeGraph():
 
     def action_up(self, old_state: int) -> Tuple[int, bool]:
         """Node position change and boundary bool for leader moving up."""
-        if old_state > (self._param['n_v'] - 1):
+        if old_state >= self._param['n_v']:
             return (old_state - self._param['n_v'], False)
 
         return (old_state, True)
 
     def action_down(self, old_state: int) -> Tuple[int, bool]:
         """Node position change and boundary bool for leader moving down."""
-        if old_state < (self._param['n_v'] - 1):
+        if old_state < np.power(self._param['n_v'], 2) - self._param['n_v']:
             return (old_state + self._param['n_v'], False)
 
         return (old_state, True)
