@@ -16,7 +16,6 @@ import numpy as np
 
 from gym_herding.envs.graph.node import Node
 from gym_herding.envs.graph.distribution import Distribution
-from gym_herding.envs.utils.position import to_matrix
 
 
 class NodeGraph():
@@ -109,12 +108,11 @@ class NodeGraph():
         """
         Sets individual node XY positions.
 
+        TODO: Update docs explanation below bc now we keep Matrix form. 
         For each node in the graph, an xy position is given in a plotting
         format. This means that a coordinate (0, 0) means the bottom left
         of a cartesian xy-plot. To convert to an ij-position scheme, use
         the `to_matrix()` function in the `position.py` file.
-
-        TODO: Update docs bc now we keep Matrix form.
         """
         state = 0
         for i in range(0, self._param['n_v']):
@@ -224,7 +222,7 @@ class NodeGraph():
         """Updates the agent count in each node/vertix."""
         for pos in self._param['all_positions']:
             state = self.get_state(pos)
-            mat_i, mat_j = to_matrix(self._param['n_v'], pos)
+            mat_i, mat_j = pos
             self._node_dict[state].agent_count = \
                 int(self.distribution.current[mat_i, mat_j] / \
                     self._param['size_fraction'])
@@ -256,7 +254,7 @@ class NodeGraph():
         graph_representation = np.zeros(
             (self._param['n_v'], self._param['n_v']), dtype=np.int8)
         for node in self:
-            mat_i, mat_j = to_matrix(self._param['n_v'], node.position)
+            mat_i, mat_j = node.position
             graph_representation[mat_i, mat_j] = node.state_id
 
         return np.array2string(graph_representation)
