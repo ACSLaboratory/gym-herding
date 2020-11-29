@@ -88,7 +88,7 @@ class PlotBarView():
 
             # Get target and current agent density bar graph data
             target_plot_data = []
-            for j in range(self._param['n_v'] - 1, -1, -1):
+            for j in range(0, self._param['n_v']):
                 for k in range(0, self._param['n_v']):
                     target_plot_data.append(graph.distribution.target[j, k])
 
