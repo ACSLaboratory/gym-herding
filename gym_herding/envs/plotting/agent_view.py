@@ -20,7 +20,7 @@ from gym_herding.envs.graph.leader import Leader
 PlotType = TypeVar('PlotType')
 
 
-class HerdingEnvPlotting():
+class PlotAgentView():
     """
     Plotting methods and data for OpenAI Herding Env class
 
@@ -34,7 +34,7 @@ class HerdingEnvPlotting():
     """
 
     def __init__(self, n_v: int, n_p: int) -> None:
-        """Initialize the HerdingEnvPlotting class."""
+        """Initialize the PlotAgentView class."""
         self.fig = None
         self.axis = None
         self.plots = None

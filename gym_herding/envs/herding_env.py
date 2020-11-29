@@ -22,8 +22,9 @@ from gym.spaces import Discrete
 from gym_herding.envs.graph.graph import NodeGraph
 from gym_herding.envs.graph.leader import Leader
 from gym_herding.envs.utils.parameters import HerdingEnvParameters
-from gym_herding.envs.plotting.agent_view import HerdingEnvPlotting
-from gym_herding.envs.plotting.bar_view import HerdingEnvPlottingBar
+from gym_herding.envs.plotting.agent_view import PlotAgentView
+from gym_herding.envs.plotting.agent_and_bar_view import PlotAgentAndBarView
+from gym_herding.envs.plotting.bar_view import PlotBarView
 
 
 class HerdingEnv(Env):
@@ -82,12 +83,13 @@ class HerdingEnv(Env):
         # Set plotting class
         if self.param.extra['rendering_enabled']:
             if self.param.extra['visualization'] == 'graph':
-                self._plot = HerdingEnvPlotting(
-                    self.param.n_v, self.param.n_p)
+                self._plot = PlotAgentView(self.param.n_v, self.param.n_p)
+
+            elif self.param.extra['visualization'] == 'bar':
+                self._plot = PlotBarView(self.param.n_v, self.param.n_p)
 
             else:
-                self._plot = HerdingEnvPlottingBar(
-                    self.param.n_v, self.param.n_p)
+                self._plot = PlotAgentAndBarView(self.param.n_v, self.param.n_p)
 
             # Initialize rendering environment (matplotlib)
             self._plot.create_figure()
