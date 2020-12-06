@@ -180,11 +180,11 @@ class HerdingEnv(Env):
                 return True
 
         elif action == 2:  # Up
-            if self.leader.state < (self.param.n_v * (self.param.n_v - 1)):
+            if self.leader.state >= self.param.n_v:
                 return True
 
         elif action == 3:  # Down
-            if self.leader.state > self.param.n_v:
+            if self.leader.state < np.power(self.param.n_v, 2) - self.param.n_v:
                 return True
 
         elif action == 4:  # Stay
