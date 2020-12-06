@@ -216,7 +216,7 @@ class NodeGraph():
 
     def action_stay(self, old_state: int) -> Tuple[int, bool]:
         """Node position change and boundary bool for leader staying."""
-        return (old_state, True)
+        return (old_state, False)
 
     def update_count(self) -> None:
         """Updates the agent count in each node/vertix."""
