@@ -25,8 +25,8 @@ def main():
 
     hep = HerdingEnvParameters(n_v, n_p, weights)
     hep.set_agents_distribution(
-        np.array([[1, 0],
-                  [0, 1]], dtype=np.float32), 'target')
+        np.array([[0.4, 0.1],
+                  [0.1, 0.4]], dtype=np.float32), 'target')
     hep.set_agents_distribution(
         np.array([[0.1, 0.4],
                   [0.4, 0.1]], dtype=np.float32), 'initial')

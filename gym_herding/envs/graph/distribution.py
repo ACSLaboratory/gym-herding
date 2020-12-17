@@ -123,18 +123,18 @@ class Distribution():
 
             dist_info_0 = 0
             dist_info_1 = 0
-            for i in range(0, matrix.shape[0]):
-                for j in range(0, matrix.shape[1]):
-                    if matrix[i, j] == 0:
-                        dist_info_0 += 1
+            # for i in range(0, matrix.shape[0]):
+            #     for j in range(0, matrix.shape[1]):
+            #         if matrix[i, j] == 0:
+            #             dist_info_0 += 1
 
-                    elif matrix[i, j] == 1:
-                        dist_info_1 += 1
+            #         elif matrix[i, j] == 1:
+            #             dist_info_1 += 1
 
-                    else:
-                        raise ValueError(
-                            'Target distribution matrix should' +
-                            ' only contain 1 or 0 values.')
+            #         else:
+            #             raise ValueError(
+            #                 'Target distribution matrix should' +
+            #                 ' only contain 1 or 0 values.')
 
             # Assign info
             self._dist['target'] = matrix
@@ -231,19 +231,24 @@ class Distribution():
                 'No initial or target distribution has been defined.')
 
         if key == 'target':
-            temp_0 = self._param['weights'][0] * (1 / self._param['count'][0])
-            temp_1 = self._param['weights'][1] * (1 / self._param['count'][1])
+            # temp_0 = self._param['weights'][0] * (1 / self._param['count'][0])
+            # temp_1 = self._param['weights'][1] * (1 / self._param['count'][1])
 
-            for i in range(0, self._param['n_v']):
-                for j in range(0, self._param['n_v']):
-                    if self._dist[key][i, j] == 0:
-                        self._dist[key][i, j] += temp_0
-                    elif self._dist[key][i, j] == 1:
-                        self._dist[key][i, j] *= temp_1
+            # for i in range(0, self._param['n_v']):
+            #     for j in range(0, self._param['n_v']):
+            #         if self._dist[key][i, j] == 0:
+            #             self._dist[key][i, j] += temp_0
+            #         elif self._dist[key][i, j] == 1:
+            #             self._dist[key][i, j] *= temp_1
+            print(key)
+            print(self._dist[key])
 
         elif key in ['initial', 'current']:
-            temp = np.squeeze(np.where(self._dist[key] == 1))
-            self._dist[key][temp] *= 1
+            # TODO Not sure what the point of this section is.
+            # temp = np.squeeze(np.where(self._dist[key] == 1))
+            # self._dist[key][temp] *= 1
+            print(key)
+            print(self._dist[key])
 
     def get_agent_count(self, i: int, j: int, dist: str = 'current') -> int:
         """Get agent count for each state from distribution."""
